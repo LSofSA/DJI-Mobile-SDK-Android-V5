@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.fragment.NavHostFragment
+import dji.sampleV5.aircraft.R
 import dji.sampleV5.aircraft.databinding.LssaMainActivityBinding
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
@@ -20,14 +22,19 @@ class LSSAMainActivity : AppCompatActivity() {
         binding = LssaMainActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.btnNavLssaDashBoard) as NavHostFragment
+        val navController = navHostFragment.navController
+
         if (!isTaskRoot && intent.hasCategory(Intent.CATEGORY_LAUNCHER) && Intent.ACTION_MAIN == intent.action) {
             finish()
             return
         }
 
-        binding.NavDashBoard.setOnClickListener {
+        binding.btnNavLssaDashBoard.setOnClickListener {
             Intent(this, LSSASurveyDashBoardActivity::class.java).also {
+
                 startActivity(it)
+                finish()
             }
         }
     }

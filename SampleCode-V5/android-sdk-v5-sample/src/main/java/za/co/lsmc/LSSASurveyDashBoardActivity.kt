@@ -25,7 +25,7 @@ class LSSASurveyDashBoardActivity : AppCompatActivity() {
             return
         }
 
-        binding.NavGoBackMain.setOnClickListener {
+        binding.btnNavLssaGoBackMain.setOnClickListener {
             Intent(this, LSSAMainActivity::class.java).also {
                 startActivity(it)
                 finish()
