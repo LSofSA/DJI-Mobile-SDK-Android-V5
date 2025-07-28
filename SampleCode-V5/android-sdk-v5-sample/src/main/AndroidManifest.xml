@@ -66,10 +66,6 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="za.co.lsmc.LSSASurveyDashBoardActivity"
-            android:theme="@style/full_screen_theme"
-            android:exported="false"/>
-
         <activity
             android:name="dji.sampleV5.aircraft.DJIAircraftMainActivity"
             android:theme="@style/full_screen_theme"
