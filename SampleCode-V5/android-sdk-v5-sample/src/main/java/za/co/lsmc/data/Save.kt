@@ -1,4 +1,4 @@
 package za.co.lsmc.data
 
-data class Save(val siteId: Int, val startLatitude: Double, val startLongitude: Double, val category: Category, val number: Double, val stopLatitude: Double, val stopLongitude: Double) {
+data class Save(var siteId: Long, var startLatitude: Double, var startLongitude: Double, var category: Category, var number: Double, var stopLatitude: Double, var stopLongitude: Double) {
 }

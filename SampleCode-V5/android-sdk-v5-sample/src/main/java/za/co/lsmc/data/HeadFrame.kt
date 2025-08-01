@@ -1,4 +1,4 @@
 package za.co.lsmc.data
 
-data class HeadFrame(val id: Int, val siteId: Int, val altitudeM: Double) {
+data class HeadFrame(var id: Long, var siteId: Int, var altitudeM: Double) {
 }
