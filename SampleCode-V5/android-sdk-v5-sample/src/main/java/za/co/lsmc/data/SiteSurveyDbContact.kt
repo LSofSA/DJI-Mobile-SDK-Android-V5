@@ -47,12 +47,14 @@ object SiteSurveyDbContact {
         const val COLUMN_NAME_SITE_ID = "Site_ID"
         const val COLUMN_NAME_POI_LATITUDE = "POI_Latitude"
         const val COLUMN_NAME_POI_LONGITUDE = "POI_Longitude"
+        const val COLUMN_NAME_POI_ALTITUDE = "POI_Altitude"
         const val COLUMN_NAME_RADIUS = "Radius"
 
         const val CREATE_TABLE = "CREATE TABLE $TABLE_NAME (\n" +
                 "$COLUMN_NAME_SITE_ID INTEGER REFERENCES ${SiteTable.TABLE_NAME} ON DELETE CASCADE,\n" +
                 "$COLUMN_NAME_POI_LATITUDE REAL,\n" +
                 "$COLUMN_NAME_POI_LONGITUDE REAL,\n" +
+                "$COLUMN_NAME_POI_ALTITUDE REAL,\n" +
                 "$COLUMN_NAME_RADIUS REAL,\n" +
                 "PRIMARY KEY ($COLUMN_NAME_SITE_ID))"
     }
@@ -64,6 +66,8 @@ object SiteSurveyDbContact {
         const val COLUMN_NAME_START_LONGITUDE = "Start_Longitude"
         const val COLUMN_NAME_STOP_LATITUDE = "Stop_Latitude"
         const val COLUMN_NAME_STOP_LONGITUDE = "Stop_Longitude"
+        const val COLUMN_NAME_CATEGORY = "Category"
+        const val COLUMN_NAME_NUMBER = "Number"
 
         const val CREATE_TABLE = "CREATE TABLE $TABLE_NAME (\n" +
                 "$COLUMN_NAME_SITE_ID INTEGER REFERENCES ${SiteTable.TABLE_NAME} ON DELETE CASCADE,\n" +
@@ -71,6 +75,8 @@ object SiteSurveyDbContact {
                 "$COLUMN_NAME_START_LONGITUDE REAL NOT NULL,\n" +
                 "$COLUMN_NAME_STOP_LATITUDE REAL NOT NULL,\n" +
                 "$COLUMN_NAME_STOP_LONGITUDE REAL NOT NULL,\n" +
+                "$COLUMN_NAME_CATEGORY INTEGER NOT NULL,\n" +
+                "$COLUMN_NAME_NUMBER INTEGER NOT NULL,\n" +
                 "PRIMARY KEY ($COLUMN_NAME_SITE_ID))"
     }
 }
