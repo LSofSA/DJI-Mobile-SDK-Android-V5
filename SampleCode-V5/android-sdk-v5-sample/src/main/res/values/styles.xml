@@ -73,4 +73,5 @@
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">@dimen/left_button_list_button_text_size</item>
     </style>
+
 </resources>

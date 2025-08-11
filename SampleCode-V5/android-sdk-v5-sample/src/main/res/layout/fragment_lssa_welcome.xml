@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/lssa_background"
+    tools:context="za.co.lsmc.LSSAWelcomeFragment">
+
+    <!-- App Title -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="DJI Survey App"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:textColor="@color/lssa_text"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="200dp" />
+
+    <!-- SDK Status -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal"
+        android:background="@color/lssa_surface"
+        android:padding="16dp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tvSDKStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SDK Status: Initializing DJI SDK..."
+            android:textSize="16sp"
+            android:textColor="@color/lssa_text" />
+
+    </LinearLayout>
+
+</FrameLayout>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- LSSA Dark Mode Colors -->
+    <color name="lssa_primary">#E3F2FD</color>         <!-- Light blue for dark backgrounds -->
+    <color name="lssa_primary_dark">#BBDEFB</color>    <!-- Slightly darker blue -->
+    <color name="lssa_accent">#2196F3</color>          <!-- Blue accent -->
+    <color name="lssa_background">#121212</color>      <!-- Material dark background -->
+    <color name="lssa_surface">#1E1E1E</color>         <!-- Dark surface for cards/inputs -->
+    <color name="lssa_text">#FFFFFF</color>            <!-- White text -->
+    <color name="lssa_text_secondary">#B0B0B0</color>  <!-- Gray secondary text -->
+    <color name="lssa_border">#333333</color>          <!-- Dark gray for borders -->
+    <color name="lssa_success">#4CAF50</color>         <!-- Brighter green for dark mode -->
+</resources>

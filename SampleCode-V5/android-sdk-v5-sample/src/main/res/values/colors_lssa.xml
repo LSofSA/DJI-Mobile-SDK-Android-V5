@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- LSSA Light Mode Colors - Inspired by LS Telcom -->
+    <color name="lssa_primary">#cd071e</color>         <!-- Your specific red -->
+    <color name="lssa_primary_dark">#a1051a</color>    <!-- Darker red for pressed states -->
+    <color name="lssa_accent">#1976D2</color>          <!-- Professional blue accent -->
+    <color name="lssa_background">#F8F9FA</color>      <!-- Very light gray - clean and professional -->
+    <color name="lssa_surface">#FFFFFF</color>         <!-- Pure white for cards/inputs -->
+    <color name="lssa_text">#212121</color>            <!-- Dark gray text - high contrast -->
+    <color name="lssa_text_secondary">#757575</color>  <!-- Medium gray for secondary text -->
+    <color name="lssa_border">#E0E0E0</color>          <!-- Light gray for borders -->
+    <color name="lssa_success">#2E7D32</color>         <!-- Green for success states -->
+</resources>
