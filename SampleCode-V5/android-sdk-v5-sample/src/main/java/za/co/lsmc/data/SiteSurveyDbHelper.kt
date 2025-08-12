@@ -28,6 +28,10 @@ class SiteSurveyDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_
         throw NotImplementedError("There is currently only one version and this function should not be called.")
     }
 
+    //////////////////////
+    ///// Site Table /////
+    //////////////////////
+
     public fun insertSite(db: SQLiteDatabase, site: Site) : Long {
         val values = ContentValues().apply {
             put(SiteSurveyDbContact.SiteTable.COLUMN_NAME_NAME, site.name)
@@ -70,6 +74,71 @@ class SiteSurveyDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_
         }
         return db.update(SiteSurveyDbContact.SiteTable.TABLE_NAME, values, "${SiteSurveyDbContact.SiteTable.COLUMN_NAME_ID}=?", arrayOf(id.toString()))
     }
+
+    public fun getSite(db: SQLiteDatabase, id: Long) : Site? {
+        val projection = arrayOf(
+            SiteSurveyDbContact.SiteTable.COLUMN_NAME_ID,
+            SiteSurveyDbContact.SiteTable.COLUMN_NAME_NAME,
+            SiteSurveyDbContact.SiteTable.COLUMN_NAME_COMPLETED
+        )
+        val selection = "${SiteSurveyDbContact.SiteTable.COLUMN_NAME_ID} = ?"
+        val selectionArgs = arrayOf(id.toString())
+        val cursor = db.query(
+            SiteSurveyDbContact.SiteTable.TABLE_NAME,
+            projection,
+            selection,
+            selectionArgs,
+            null,
+            null,
+            null
+        )
+        with(cursor) {
+            if (moveToNext()) {
+                val site = Site(
+                    getLong(getColumnIndexOrThrow(SiteSurveyDbContact.SiteTable.COLUMN_NAME_ID)),
+                    getString(getColumnIndexOrThrow(SiteSurveyDbContact.SiteTable.COLUMN_NAME_NAME)),
+                    Date(getLong(getColumnIndexOrThrow(SiteSurveyDbContact.SiteTable.COLUMN_NAME_COMPLETED)))
+                )
+                close()
+                return site
+            }
+        }
+        cursor.close()
+        return null
+    }
+
+    public fun getAllSites(db: SQLiteDatabase) : Array<Site> {
+        val projection = arrayOf(
+            SiteSurveyDbContact.SiteTable.COLUMN_NAME_ID,
+            SiteSurveyDbContact.SiteTable.COLUMN_NAME_NAME,
+            SiteSurveyDbContact.SiteTable.COLUMN_NAME_COMPLETED
+        )
+        val cursor = db.query(
+            SiteSurveyDbContact.SiteTable.TABLE_NAME,
+            projection,
+            null,
+            null,
+            null,
+            null,
+            null
+        )
+        val items = mutableListOf<Site>()
+        with(cursor) {
+            while (moveToNext()) {
+                items.add(Site(
+                    getLong(getColumnIndexOrThrow(SiteSurveyDbContact.SiteTable.COLUMN_NAME_ID)),
+                    getString(getColumnIndexOrThrow(SiteSurveyDbContact.SiteTable.COLUMN_NAME_NAME)),
+                    Date(getLong(getColumnIndexOrThrow(SiteSurveyDbContact.SiteTable.COLUMN_NAME_COMPLETED)))
+                ))
+            }
+            close()
+        }
+        return items.toTypedArray()
+    }
+
+    ///////////////////////
+    ///// Photo Table /////
+    ///////////////////////
 
     public fun insertPhoto(db: SQLiteDatabase, photo: Photo) : Long {
         val values = ContentValues().apply {
@@ -120,6 +189,114 @@ class SiteSurveyDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_
         return db.update(SiteSurveyDbContact.PhotoTable.TABLE_NAME, values, "${SiteSurveyDbContact.PhotoTable.COLUMN_NAME_ID}=?", arrayOf(id.toString()))
     }
 
+    public fun getPhoto(db: SQLiteDatabase, id: Long) : Photo? {
+        val projection = arrayOf(
+            SiteSurveyDbContact.PhotoTable.COLUMN_NAME_ID,
+            SiteSurveyDbContact.PhotoTable.COLUMN_NAME_SITE_ID,
+            SiteSurveyDbContact.PhotoTable.COLUMN_NAME_FILENAME,
+            SiteSurveyDbContact.PhotoTable.COLUMN_NAME_CATEGORY,
+            SiteSurveyDbContact.PhotoTable.COLUMN_NAME_NUMBER
+        )
+        val selection = "${SiteSurveyDbContact.PhotoTable.COLUMN_NAME_ID} = ?"
+        val selectionArgs = arrayOf(id.toString())
+        val cursor = db.query(
+            SiteSurveyDbContact.PhotoTable.TABLE_NAME,
+            projection,
+            selection,
+            selectionArgs,
+            null,
+            null,
+            null
+        )
+        with(cursor) {
+            if (moveToNext()) {
+                val photo = Photo(
+                    getLong(getColumnIndexOrThrow(SiteSurveyDbContact.PhotoTable.COLUMN_NAME_ID)),
+                    getLong(getColumnIndexOrThrow(SiteSurveyDbContact.PhotoTable.COLUMN_NAME_SITE_ID)),
+                    getString(getColumnIndexOrThrow(SiteSurveyDbContact.PhotoTable.COLUMN_NAME_FILENAME)),
+                    Category.values()[getInt(getColumnIndexOrThrow(SiteSurveyDbContact.PhotoTable.COLUMN_NAME_CATEGORY))],
+                    getDouble(getColumnIndexOrThrow(SiteSurveyDbContact.PhotoTable.COLUMN_NAME_NUMBER))
+                )
+                close()
+                return photo
+            }
+        }
+        cursor.close()
+        return null
+    }
+
+    public fun getAllPhoto(db: SQLiteDatabase) : Array<Photo> {
+        val projection = arrayOf(
+            SiteSurveyDbContact.PhotoTable.COLUMN_NAME_ID,
+            SiteSurveyDbContact.PhotoTable.COLUMN_NAME_SITE_ID,
+            SiteSurveyDbContact.PhotoTable.COLUMN_NAME_FILENAME,
+            SiteSurveyDbContact.PhotoTable.COLUMN_NAME_CATEGORY,
+            SiteSurveyDbContact.PhotoTable.COLUMN_NAME_NUMBER
+        )
+        val cursor = db.query(
+            SiteSurveyDbContact.PhotoTable.TABLE_NAME,
+            projection,
+            null,
+            null,
+            null,
+            null,
+            null
+        )
+        val items = mutableListOf<Photo>()
+        with(cursor) {
+            while (moveToNext()) {
+                items.add(Photo(
+                    getLong(getColumnIndexOrThrow(SiteSurveyDbContact.PhotoTable.COLUMN_NAME_ID)),
+                    getLong(getColumnIndexOrThrow(SiteSurveyDbContact.PhotoTable.COLUMN_NAME_SITE_ID)),
+                    getString(getColumnIndexOrThrow(SiteSurveyDbContact.PhotoTable.COLUMN_NAME_FILENAME)),
+                    Category.values()[getInt(getColumnIndexOrThrow(SiteSurveyDbContact.PhotoTable.COLUMN_NAME_CATEGORY))],
+                    getDouble(getColumnIndexOrThrow(SiteSurveyDbContact.PhotoTable.COLUMN_NAME_NUMBER))
+                ))
+            }
+            close()
+        }
+        return items.toTypedArray()
+    }
+
+    public fun getPhotosBySite(db: SQLiteDatabase, siteId: Long) : Array<Photo> {
+        val projection = arrayOf(
+            SiteSurveyDbContact.PhotoTable.COLUMN_NAME_ID,
+            SiteSurveyDbContact.PhotoTable.COLUMN_NAME_SITE_ID,
+            SiteSurveyDbContact.PhotoTable.COLUMN_NAME_FILENAME,
+            SiteSurveyDbContact.PhotoTable.COLUMN_NAME_CATEGORY,
+            SiteSurveyDbContact.PhotoTable.COLUMN_NAME_NUMBER
+        )
+        val selection = "${SiteSurveyDbContact.PhotoTable.COLUMN_NAME_SITE_ID} = ?"
+        val selectionArgs = arrayOf(siteId.toString())
+        val cursor = db.query(
+            SiteSurveyDbContact.PhotoTable.TABLE_NAME,
+            projection,
+            selection,
+            selectionArgs,
+            null,
+            null,
+            null
+        )
+        val items = mutableListOf<Photo>()
+        with(cursor) {
+            while (moveToNext()) {
+                items.add(Photo(
+                    getLong(getColumnIndexOrThrow(SiteSurveyDbContact.PhotoTable.COLUMN_NAME_ID)),
+                    getLong(getColumnIndexOrThrow(SiteSurveyDbContact.PhotoTable.COLUMN_NAME_SITE_ID)),
+                    getString(getColumnIndexOrThrow(SiteSurveyDbContact.PhotoTable.COLUMN_NAME_FILENAME)),
+                    Category.values()[getInt(getColumnIndexOrThrow(SiteSurveyDbContact.PhotoTable.COLUMN_NAME_CATEGORY))],
+                    getDouble(getColumnIndexOrThrow(SiteSurveyDbContact.PhotoTable.COLUMN_NAME_NUMBER))
+                ))
+            }
+            close()
+        }
+        return items.toTypedArray()
+    }
+
+    ////////////////////////////
+    ///// Head Frame Table /////
+    ////////////////////////////
+
     public fun insertHeadFrame(db: SQLiteDatabase, headFrame: HeadFrame) : Long {
         val values = ContentValues().apply {
             put(SiteSurveyDbContact.HeadFrameTable.COLUMN_NAME_SITE_ID, headFrame.siteId)
@@ -160,6 +337,102 @@ class SiteSurveyDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_
         }
         return db.update(SiteSurveyDbContact.HeadFrameTable.TABLE_NAME, values, "${SiteSurveyDbContact.HeadFrameTable.COLUMN_NAME_ID}=?", arrayOf(id.toString()))
     }
+
+    public fun getHeadFrame(db: SQLiteDatabase, id: Long) : HeadFrame? {
+        val projection = arrayOf(
+            SiteSurveyDbContact.HeadFrameTable.COLUMN_NAME_ID,
+            SiteSurveyDbContact.HeadFrameTable.COLUMN_NAME_SITE_ID,
+            SiteSurveyDbContact.HeadFrameTable.COLUMN_NAME_ALTITUDE
+        )
+        val selection = "${SiteSurveyDbContact.HeadFrameTable.COLUMN_NAME_ID} = ?"
+        val selectionArgs = arrayOf(id.toString())
+        val cursor = db.query(
+            SiteSurveyDbContact.HeadFrameTable.TABLE_NAME,
+            projection,
+            selection,
+            selectionArgs,
+            null,
+            null,
+            null
+        )
+        with(cursor) {
+            if (moveToNext()) {
+                val headFrame = HeadFrame(
+                    getLong(getColumnIndexOrThrow(SiteSurveyDbContact.HeadFrameTable.COLUMN_NAME_ID)),
+                    getLong(getColumnIndexOrThrow(SiteSurveyDbContact.HeadFrameTable.COLUMN_NAME_SITE_ID)),
+                    getDouble(getColumnIndexOrThrow(SiteSurveyDbContact.HeadFrameTable.COLUMN_NAME_ALTITUDE))
+                )
+                close()
+                return headFrame
+            }
+        }
+        cursor.close()
+        return null
+    }
+
+    public fun getAllHeadFrames(db: SQLiteDatabase) : Array<HeadFrame> {
+        val projection = arrayOf(
+            SiteSurveyDbContact.HeadFrameTable.COLUMN_NAME_ID,
+            SiteSurveyDbContact.HeadFrameTable.COLUMN_NAME_SITE_ID,
+            SiteSurveyDbContact.HeadFrameTable.COLUMN_NAME_ALTITUDE
+        )
+        val cursor = db.query(
+            SiteSurveyDbContact.HeadFrameTable.TABLE_NAME,
+            projection,
+            null,
+            null,
+            null,
+            null,
+            null
+        )
+        val items = mutableListOf<HeadFrame>()
+        with(cursor) {
+            while (moveToNext()) {
+                items.add(HeadFrame(
+                    getLong(getColumnIndexOrThrow(SiteSurveyDbContact.HeadFrameTable.COLUMN_NAME_ID)),
+                    getLong(getColumnIndexOrThrow(SiteSurveyDbContact.HeadFrameTable.COLUMN_NAME_SITE_ID)),
+                    getDouble(getColumnIndexOrThrow(SiteSurveyDbContact.HeadFrameTable.COLUMN_NAME_ALTITUDE))
+                ))
+            }
+            close()
+        }
+        return items.toTypedArray()
+    }
+
+    public fun getHeadFramesBySite(db: SQLiteDatabase, siteId : Long) : Array<HeadFrame> {
+        val projection = arrayOf(
+            SiteSurveyDbContact.HeadFrameTable.COLUMN_NAME_ID,
+            SiteSurveyDbContact.HeadFrameTable.COLUMN_NAME_SITE_ID,
+            SiteSurveyDbContact.HeadFrameTable.COLUMN_NAME_ALTITUDE
+        )
+        val selection = "${SiteSurveyDbContact.HeadFrameTable.COLUMN_NAME_SITE_ID} = ?"
+        val selectionArgs = arrayOf(siteId.toString())
+        val cursor = db.query(
+            SiteSurveyDbContact.HeadFrameTable.TABLE_NAME,
+            projection,
+            selection,
+            selectionArgs,
+            null,
+            null,
+            null
+        )
+        val items = mutableListOf<HeadFrame>()
+        with(cursor) {
+            while (moveToNext()) {
+                items.add(HeadFrame(
+                    getLong(getColumnIndexOrThrow(SiteSurveyDbContact.HeadFrameTable.COLUMN_NAME_ID)),
+                    getLong(getColumnIndexOrThrow(SiteSurveyDbContact.HeadFrameTable.COLUMN_NAME_SITE_ID)),
+                    getDouble(getColumnIndexOrThrow(SiteSurveyDbContact.HeadFrameTable.COLUMN_NAME_ALTITUDE))
+                ))
+            }
+            close()
+        }
+        return items.toTypedArray()
+    }
+
+    ////////////////////////////
+    ///// Tower Scan Table /////
+    ////////////////////////////
 
     public fun insertTowerScan(db: SQLiteDatabase, towerScan: TowerScan) : Long {
         val values = ContentValues().apply {
@@ -213,6 +486,46 @@ class SiteSurveyDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_
         }
         return db.update(SiteSurveyDbContact.TowerScanTable.TABLE_NAME, values, "${SiteSurveyDbContact.TowerScanTable.COLUMN_NAME_SITE_ID}=?", arrayOf(siteId.toString()))
     }
+
+    public fun getTowerScan(db: SQLiteDatabase, siteId: Long) : TowerScan? {
+        val projection = arrayOf(
+            SiteSurveyDbContact.TowerScanTable.COLUMN_NAME_SITE_ID,
+            SiteSurveyDbContact.TowerScanTable.COLUMN_NAME_POI_LATITUDE,
+            SiteSurveyDbContact.TowerScanTable.COLUMN_NAME_POI_LONGITUDE,
+            SiteSurveyDbContact.TowerScanTable.COLUMN_NAME_POI_ALTITUDE,
+            SiteSurveyDbContact.TowerScanTable.COLUMN_NAME_RADIUS
+        )
+        val selection = "${SiteSurveyDbContact.TowerScanTable.COLUMN_NAME_SITE_ID} = ?"
+        val selectionArgs = arrayOf(siteId.toString())
+        val cursor = db.query(
+            SiteSurveyDbContact.TowerScanTable.TABLE_NAME,
+            projection,
+            selection,
+            selectionArgs,
+            null,
+            null,
+            null
+        )
+        with(cursor) {
+            if (moveToNext()) {
+                val towerScan = TowerScan(
+                    getLong(getColumnIndexOrThrow(SiteSurveyDbContact.TowerScanTable.COLUMN_NAME_SITE_ID)),
+                    getDouble(getColumnIndexOrThrow(SiteSurveyDbContact.TowerScanTable.COLUMN_NAME_POI_LATITUDE)),
+                    getDouble(getColumnIndexOrThrow(SiteSurveyDbContact.TowerScanTable.COLUMN_NAME_POI_LONGITUDE)),
+                    getDouble(getColumnIndexOrThrow(SiteSurveyDbContact.TowerScanTable.COLUMN_NAME_POI_ALTITUDE)),
+                    getDouble(getColumnIndexOrThrow(SiteSurveyDbContact.TowerScanTable.COLUMN_NAME_RADIUS))
+                )
+                close()
+                return towerScan
+            }
+        }
+        cursor.close()
+        return null
+    }
+
+    //////////////////////
+    ///// Save Table /////
+    //////////////////////
 
     public fun insertSave(db: SQLiteDatabase, save: Save) : Long {
         val values = ContentValues().apply {
@@ -273,5 +586,45 @@ class SiteSurveyDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_
             put(SiteSurveyDbContact.SaveTable.COLUMN_NAME_NUMBER, num)
         }
         return db.update(SiteSurveyDbContact.SaveTable.TABLE_NAME, values, "${SiteSurveyDbContact.SaveTable.COLUMN_NAME_SITE_ID}=?", arrayOf(siteId.toString()))
+    }
+
+    public fun getSave(db: SQLiteDatabase, siteId: Long) : Save? {
+        val projection = arrayOf(
+            SiteSurveyDbContact.SaveTable.COLUMN_NAME_SITE_ID,
+            SiteSurveyDbContact.SaveTable.COLUMN_NAME_START_LATITUDE,
+            SiteSurveyDbContact.SaveTable.COLUMN_NAME_START_LONGITUDE,
+            SiteSurveyDbContact.SaveTable.COLUMN_NAME_STOP_LATITUDE,
+            SiteSurveyDbContact.SaveTable.COLUMN_NAME_STOP_LONGITUDE,
+            SiteSurveyDbContact.SaveTable.COLUMN_NAME_CATEGORY,
+            SiteSurveyDbContact.SaveTable.COLUMN_NAME_NUMBER
+        )
+        val selection = "${SiteSurveyDbContact.SaveTable.COLUMN_NAME_SITE_ID} = ?"
+        val selectionArgs = arrayOf(siteId.toString())
+        val cursor = db.query(
+            SiteSurveyDbContact.SaveTable.TABLE_NAME,
+            projection,
+            selection,
+            selectionArgs,
+            null,
+            null,
+            null
+        )
+        with(cursor) {
+            if (moveToNext()) {
+                val save = Save(
+                    getLong(getColumnIndexOrThrow(SiteSurveyDbContact.SaveTable.COLUMN_NAME_SITE_ID)),
+                    getDouble(getColumnIndexOrThrow(SiteSurveyDbContact.SaveTable.COLUMN_NAME_START_LATITUDE)),
+                    getDouble(getColumnIndexOrThrow(SiteSurveyDbContact.SaveTable.COLUMN_NAME_START_LONGITUDE)),
+                    Category.values()[getInt(getColumnIndexOrThrow(SiteSurveyDbContact.SaveTable.COLUMN_NAME_CATEGORY))],
+                    getDouble(getColumnIndexOrThrow(SiteSurveyDbContact.SaveTable.COLUMN_NAME_NUMBER)),
+                    getDouble(getColumnIndexOrThrow(SiteSurveyDbContact.SaveTable.COLUMN_NAME_STOP_LATITUDE)),
+                    getDouble(getColumnIndexOrThrow(SiteSurveyDbContact.SaveTable.COLUMN_NAME_STOP_LATITUDE))
+                )
+                close()
+                return save
+            }
+        }
+        cursor.close()
+        return null
     }
 }
