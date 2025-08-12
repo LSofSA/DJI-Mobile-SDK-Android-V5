@@ -76,7 +76,7 @@ object SiteSurveyDbContact {
                 "$COLUMN_NAME_STOP_LATITUDE REAL NOT NULL,\n" +
                 "$COLUMN_NAME_STOP_LONGITUDE REAL NOT NULL,\n" +
                 "$COLUMN_NAME_CATEGORY INTEGER NOT NULL,\n" +
-                "$COLUMN_NAME_NUMBER INTEGER NOT NULL,\n" +
+                "$COLUMN_NAME_NUMBER REAL NOT NULL,\n" +
                 "PRIMARY KEY ($COLUMN_NAME_SITE_ID))"
     }
 }
