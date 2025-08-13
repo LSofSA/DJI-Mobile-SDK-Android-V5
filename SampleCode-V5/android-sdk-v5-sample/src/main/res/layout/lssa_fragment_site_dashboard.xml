@@ -11,42 +11,8 @@
         android:padding="16dp">
 
         <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="4dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="16dp">
-
-                <TextView
-                    android:id="@+id/lssaTextViewSiteName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Site Name"
-                    android:textSize="24sp"
-                    android:textStyle="bold"
-                    android:textColor="@android:color/black" />
-
-                <TextView
-                    android:id="@+id/lssaTextViewSiteStatus"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Status"
-                    android:textSize="16sp"
-                    android:textColor="@android:color/darker_gray"
-                    android:layout_marginTop="8dp" />
-
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="match_parent"
             android:layout_marginBottom="16dp"
             app:cardCornerRadius="8dp"
@@ -58,31 +24,48 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Survey Data"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="@android:color/black"
-                    android:layout_marginBottom="8dp" />
+                <LinearLayout android:layout_height="wrap_content"
+                    android:layout_width="match_parent">
 
+                    <Button
+                        android:layout_width="48dp"
+                        android:background="@drawable/ic_arrow_back"
+                        android:layout_height="48dp"/>
                 <TextView
-                    android:id="@+id/lssaTextViewPhotoCount"
+                    android:id="@+id/lssaTextViewSiteName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Photos: 0"
-                    android:textSize="16sp"
-                    android:layout_marginBottom="4dp" />
+                    android:text="Site Name"
+                    android:layout_gravity="center_vertical"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+                </LinearLayout>
 
-                <TextView
-                    android:id="@+id/lssaTextViewHeadFrameCount"
+                <ListView
+                    android:layout_width="match_parent"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"/>
+
+                <Button
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Head Frames: 0"
-                    android:textSize="16sp" />
+                    android:text="Delete" />
 
             </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="500dp"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp">
+
+            <GridView
+                android:layout_width="match_parent"
+                android:numColumns="3"
+                android:layout_height="match_parent"/>
 
         </androidx.cardview.widget.CardView>
 
