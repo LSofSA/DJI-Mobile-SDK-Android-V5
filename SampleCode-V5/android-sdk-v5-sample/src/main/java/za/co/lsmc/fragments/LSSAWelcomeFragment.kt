@@ -10,8 +10,6 @@ import dji.sampleV5.aircraft.R
 
 class LSSAWelcomeFragment : Fragment() {
 
-    private lateinit var statusText: TextView
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -21,8 +19,6 @@ class LSSAWelcomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        statusText = view.findViewById(R.id.tvSDKStatus)
     }
 
 }
