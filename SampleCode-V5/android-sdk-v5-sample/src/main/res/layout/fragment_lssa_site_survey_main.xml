@@ -3,73 +3,44 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/lssa_background"
+    android:orientation="vertical"
     android:padding="16dp"
     tools:context="za.co.lsmc.LSSASiteSurveyMain">
 
     <!-- Header Row -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginBottom="16dp">
-
-        <!-- Survey Sites Title -->
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Survey Sites"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="@color/lssa_text" />
-
-        <!-- Live View Button -->
-        <Button
-            android:id="@+id/btnLiveView"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:text="Live View"
-            android:textColor="@color/lssa_background"
-            android:background="@color/lssa_primary"
-            android:paddingHorizontal="24dp"
-            android:textAllCaps="false" />
-
-    </LinearLayout>
 
     <!-- Input Row -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:layout_marginBottom="16dp"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
         <!-- Site Name Input -->
         <EditText
             android:id="@+id/etSiteName"
             android:layout_width="0dp"
             android:layout_height="50dp"
+            android:layout_marginEnd="8dp"
             android:layout_weight="1"
-            android:hint="Enter site name [Country - Customer Name - Site ID - Date]"
-            android:textColorHint="@color/lssa_text_secondary"
-            android:textColor="@color/lssa_text"
             android:background="@color/lssa_surface"
+            android:hint="Enter site name [Country - Customer Name - Site ID - Date]"
             android:paddingHorizontal="16dp"
-            android:layout_marginEnd="8dp" />
+            android:textColor="@color/lssa_text"
+            android:textColorHint="@color/lssa_text_secondary" />
 
         <!-- Add Button -->
         <Button
             android:id="@+id/btnAddSite"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:text="+"
-            android:textSize="24sp"
-            android:textColor="@color/lssa_text"
             android:background="@color/lssa_surface"
-            android:gravity="center" />
+            android:gravity="center"
+            android:text="+"
+            android:textColor="@color/lssa_text"
+            android:textSize="24sp" />
 
     </LinearLayout>
 
@@ -86,34 +57,34 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:orientation="vertical"
-            android:gravity="center">
+            android:gravity="center"
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:gravity="center"
                 android:text="No sites! Please enter the folder name for a new site and then click the '+' button to create it"
                 android:textColor="@color/lssa_text"
-                android:textSize="18sp"
-                android:gravity="center"
-                android:layout_marginBottom="16dp" />
+                android:textSize="18sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:gravity="center"
                 android:text="The format should be: Country - customer name - site ID - date"
                 android:textColor="@color/lssa_text_secondary"
-                android:textSize="14sp"
-                android:gravity="center"
-                android:layout_marginBottom="8dp" />
+                android:textSize="14sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:text="example: UK-CUSTOMER-12345-111221"
                 android:textColor="@color/lssa_text_secondary"
-                android:textSize="14sp"
-                android:gravity="center" />
+                android:textSize="14sp" />
 
         </LinearLayout>
 
