@@ -494,4 +494,11 @@ More refer to the release notes." </string>
     <string name="item_app_silently_upgrade_description">Demonstrate APP Silently Upgrade functions</string>
     <string name="btn_silently_upgrade_package">Set Silently Upgrade Package</string>
     <string name="btn_install_test_app">Install Test App</string>
+
+    <!-- LSSA app stuff -->
+    <string name="lssa_nav_back">Go Back</string>
+    <string name="lssa_take_photo">Take Photo</string>
+    <string name="lssa_interval_s">Interval (s)</string>
+    <string name="lssa_start_interval">Start Interval</string>
+    <string name="lssa_stop_interval">Stop Interval</string>
 </resources>
