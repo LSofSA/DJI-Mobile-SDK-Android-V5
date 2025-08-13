@@ -35,7 +35,7 @@
 
     <fragment
         android:id="@+id/siteDashboardFragment"
-        android:name="za.co.lsmc.fragments.SiteListFragment"
+        android:name="za.co.lsmc.fragments.SiteDashboardFragment"
         android:label="Site Dashboard" >
         <argument
             android:name="siteId"
