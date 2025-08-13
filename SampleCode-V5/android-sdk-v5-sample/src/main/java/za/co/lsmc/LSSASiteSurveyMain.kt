@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import dji.sampleV5.aircraft.R
+import za.co.lsmc.viewmodels.LSSASiteSurveyViewModel
 
 class LSSASiteSurveyMain : Fragment() {
 
