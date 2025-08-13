@@ -8,7 +8,7 @@
     <!-- Welcome/Loading Screen -->
     <fragment
         android:id="@+id/lssaWelcome"
-        android:name="za.co.lsmc.LSSAWelcomeFragment"
+        android:name="za.co.lsmc.fragments.LSSAWelcomeFragment"
         android:label="fragment_lssa_welcome"
         tools:layout="@layout/fragment_lssa_welcome" />
 
@@ -23,5 +23,23 @@
     <action
         android:id="@+id/action_welcome_to_main"
         app:destination="@id/lssaSiteSurveyMain" />
+
+    <fragment
+        android:id="@+id/siteListFragment"
+        android:name="za.co.lsmc.fragments.SiteListFragment"
+        android:label="Site List" >
+        <action
+            android:id="@+id/action_siteList_to_siteDashboard"
+            app:destination="@id/siteDashboardFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/siteDashboardFragment"
+        android:name="za.co.lsmc.fragments.SiteListFragment"
+        android:label="Site Dashboard" >
+        <argument
+            android:name="siteId"
+            app:argType="long" />
+    </fragment>
 
 </navigation>
