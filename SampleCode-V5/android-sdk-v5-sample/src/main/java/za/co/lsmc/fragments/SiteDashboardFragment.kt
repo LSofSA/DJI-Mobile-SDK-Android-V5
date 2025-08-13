@@ -128,15 +128,18 @@ class SiteDashboardFragment : Fragment() {
     //LEFT SIDE "actions"
     private fun createSectionsList(): List<SectionStatus> {
         return listOf(
+            //rest is self-explanatory
             SectionStatus("POI Center Photo", Category.POI, hasPhotoForCategory(Category.POI), false, 0),
             SectionStatus("TSO Orbit Photos", Category.TSO, hasPhotoForCategory(Category.TSO), false, 0),
+            SectionStatus("Access Route / Road Photos", Category.ACCESS_ROUTE, hasPhotoForCategory(Category.ACCESS_ROUTE), false, 0),
+            SectionStatus("Feeder Run (Ladder) Photos", Category.FEEDER_RUN, hasPhotoForCategory(Category.FEEDER_RUN), false, 0),
+
+            // head frames and its sub sections
             SectionStatus("Head Frame Photos", null, false, true, 0),
             SectionStatus("   Down Orbit", Category.HF_DOWN, hasPhotoForCategory(Category.HF_DOWN), false, 1),
             SectionStatus("   Level Orbit", Category.HF_LEVEL, hasPhotoForCategory(Category.HF_LEVEL), false, 1),
             SectionStatus("   Panoramic Orbit", Category.HF_PANORAMIC, hasPhotoForCategory(Category.HF_PANORAMIC), false, 1),
-            SectionStatus("   Up Orbit", Category.HF_UP, hasPhotoForCategory(Category.HF_UP), false, 1),
-            SectionStatus("Access Route / Road Photos", Category.ACCESS_ROUTE, hasPhotoForCategory(Category.ACCESS_ROUTE), false, 0),
-            SectionStatus("Feeder Run (Ladder) Photos", Category.FEEDER_RUN, hasPhotoForCategory(Category.FEEDER_RUN), false, 0)
+            SectionStatus("   Up Orbit", Category.HF_UP, hasPhotoForCategory(Category.HF_UP), false, 1)
         )
     }
 
