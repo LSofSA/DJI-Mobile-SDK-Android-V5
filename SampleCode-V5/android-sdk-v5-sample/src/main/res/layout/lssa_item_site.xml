@@ -36,7 +36,7 @@
                 android:id="@+id/lssaTextViewSiteDate"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:text="Date"
+                android:text="1900/01/01"
                 android:layout_gravity="end|center"
                 android:textSize="12sp"
                 android:textColor="@android:color/darker_gray"
