@@ -52,11 +52,10 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:background="@color/red"
             android:contentDescription="Delete site"
             android:padding="8dp"
-            android:src="@android:drawable/ic_menu_close_clear_cancel" />
+            android:src="@drawable/ic_close" />
     </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

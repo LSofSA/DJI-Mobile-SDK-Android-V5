@@ -9,6 +9,9 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dji.sampleV5.aircraft.R
@@ -16,6 +19,7 @@ import za.co.lsmc.LSSAMainActivity
 import za.co.lsmc.adapters.SiteListAdapter
 import za.co.lsmc.data.Site
 import za.co.lsmc.data.SiteSurveyDbHelper
+import za.co.lsmc.viewmodels.LSSASiteSurveyViewModel
 
 class SiteListFragment : Fragment() {
 
@@ -23,8 +27,9 @@ class SiteListFragment : Fragment() {
     private lateinit var lssaEditTextSiteName: EditText
     private lateinit var lssaButtonAddSite: Button
     private lateinit var adapter: SiteListAdapter
-    private lateinit var dbHelper: SiteSurveyDbHelper
     private val sites = mutableListOf<Site>()
+
+    private val viewModel: LSSASiteSurveyViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,7 +42,8 @@ class SiteListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        dbHelper = SiteSurveyDbHelper(requireContext())
+        val dbHelper = SiteSurveyDbHelper(requireContext())
+        viewModel.initDbHelper(dbHelper)
 
         lssaRecyclerViewSites = view.findViewById(R.id.lssaRecyclerViewSites)
         lssaEditTextSiteName = view.findViewById(R.id.lssaEditTextSiteName)
@@ -46,16 +52,19 @@ class SiteListFragment : Fragment() {
         setupRecyclerView()
         setupAddButton()
         loadSites()
+
     }
 
     private fun setupRecyclerView() {
         adapter = SiteListAdapter(
             sites,
             onSiteClick = { site ->
-                (activity as LSSAMainActivity).loadSiteDashboard(site.id)
+                viewModel.site = site
+                findNavController().navigate(R.id.action_siteList_to_siteDashboard)
             },
             onDeleteClick = { site ->
-                showDeleteConfirmation(site)
+                viewModel.site = site
+                showDeleteConfirmation()
             }
         )
 
@@ -75,55 +84,46 @@ class SiteListFragment : Fragment() {
     }
 
     private fun loadSites() {
-        val db = dbHelper.readableDatabase
-        val siteArray = dbHelper.getAllSites(db)
+       /* val db = dbHelper.readableDatabase
+        val siteArray = dbHelper.getAllSites(db)*/
+
         sites.clear()
-        sites.addAll(siteArray)
+        sites.addAll(viewModel.loadSites())
         adapter.notifyDataSetChanged()
-        db.close()
     }
 
     private fun addSite(name: String) {
-        val db = dbHelper.writableDatabase
         try {
-            val newSite = dbHelper.insertSite(db, name, null)
-            sites.add(newSite)
-            adapter.notifyItemInserted(sites.size - 1)
+            viewModel.addSite(name)
+            loadSites()
+            //adapter.notifyItemInserted(sites.size - 1)
             lssaEditTextSiteName.text.clear()
             Toast.makeText(requireContext(), "Site added successfully", Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
             Toast.makeText(requireContext(), "Error adding site: ${e.message}", Toast.LENGTH_SHORT).show()
-        } finally {
-            db.close()
         }
     }
 
-    private fun showDeleteConfirmation(site: Site) {
+    private fun showDeleteConfirmation() {
         AlertDialog.Builder(requireContext())
             .setTitle("Delete Site")
-            .setMessage("Are you sure you want to delete '${site.name}'? This will also delete all related data.")
+            .setMessage("Are you sure you want to delete '${viewModel.site}'? This will also delete all related data.")
             .setPositiveButton("Delete") { _, _ ->
-                deleteSite(site)
+                deleteSite()
             }
             .setNegativeButton("Cancel", null)
             .show()
     }
 
-    private fun deleteSite(site: Site) {
-        val db = dbHelper.writableDatabase
+    private fun deleteSite() {
         try {
-            dbHelper.deleteSite(db, site)
-
-            val position = sites.indexOf(site)
-            if (position >= 0) {
-                sites.removeAt(position)
-                adapter.notifyItemRemoved(position)
-                Toast.makeText(requireContext(), "Site deleted successfully", Toast.LENGTH_SHORT).show()
-            }
+            viewModel.deleteSite()
+            loadSites()
+            //adapter.notifyItemRemoved(sites.indexOf(viewModel.site))
+            viewModel.site = null
+            Toast.makeText(requireContext(), "Site deleted successfully", Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
             Toast.makeText(requireContext(), "Error deleting site: ${e.message}", Toast.LENGTH_SHORT).show()
-        } finally {
-            db.close()
         }
     }
 }

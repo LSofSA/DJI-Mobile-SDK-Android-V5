@@ -5,8 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import dji.sampleV5.aircraft.R
 import za.co.lsmc.models.SectionStatus
 
@@ -26,18 +28,18 @@ class SectionStatusAdapter(
             .inflate(R.layout.lssa_item_section_status, parent, false)
 
         val section = sections[position]
-        val statusIcon = view.findViewById<ImageView>(R.id.lssaButtonDeletePhotosAction)
+        val statusIcon = view.findViewById<Button>(R.id.lssaButtonDeletePhotosAction)
         val sectionName = view.findViewById<TextView>(R.id.lssaTextViewSectionName)
 
         sectionName.text = section.name
 
-        if (section.isCompleted) {
-            statusIcon.setImageResource(android.R.drawable.ic_menu_edit)
-            statusIcon.setColorFilter(android.graphics.Color.GREEN)
-        } else {
-            statusIcon.setImageResource(android.R.drawable.ic_menu_close_clear_cancel)
-            statusIcon.setColorFilter(android.graphics.Color.RED)
-        }
+        val statusColour = ContextCompat.getColor(context, if (section.isCompleted) R.color.green else R.color.red)
+        val statusContent = if (section.isCompleted)  R.drawable.ic_check else R.drawable.ic_close
+
+        //TODO update this
+        //statusIcon.setBackgroundResource(statusColour)
+        //statusIcon.setBackground(statusContent)
+
 
         if(section.isParent)
         {

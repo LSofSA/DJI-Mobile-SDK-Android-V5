@@ -12,22 +12,20 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import dji.sampleV5.aircraft.R
 import za.co.lsmc.adapters.ActionButtonAdapter
 import za.co.lsmc.adapters.SectionStatusAdapter
 import za.co.lsmc.data.Category
 import za.co.lsmc.data.Photo
-import za.co.lsmc.data.Site
-import za.co.lsmc.data.SiteSurveyDbHelper
 import za.co.lsmc.models.ActionButton
 import za.co.lsmc.models.SectionStatus
+import za.co.lsmc.viewmodels.LSSASiteSurveyViewModel
 
 class SiteDashboardFragment : Fragment() {
 
-    private lateinit var dbHelper: SiteSurveyDbHelper
-    private var siteId: Long = -1
-    private var site: Site? = null  // TODO: rather use lateInit perhaps? I this might be why site is null when we navigate here
+    private val viewModel: LSSASiteSurveyViewModel by activityViewModels()
 
     private lateinit var lssaTextViewSiteName: TextView
     private lateinit var lssaButtonBack: Button
@@ -41,23 +39,9 @@ class SiteDashboardFragment : Fragment() {
     private var photos: List<Photo> = emptyList()
 
     companion object {
-        private const val ARG_SITE_ID = "site_id"
-
-        fun newInstance(siteId: Long): SiteDashboardFragment {
-            val fragment = SiteDashboardFragment()
-            val args = Bundle()
-            args.putLong(ARG_SITE_ID, siteId)
-            fragment.arguments = args
-            return fragment
+        fun newInstance(): SiteDashboardFragment {
+            return SiteDashboardFragment()
         }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            siteId = it.getLong(ARG_SITE_ID)
-        }
-        dbHelper = SiteSurveyDbHelper(requireContext())
     }
 
     override fun onCreateView(
@@ -103,7 +87,8 @@ class SiteDashboardFragment : Fragment() {
 
     private fun setupClickListeners() {
         lssaButtonBack.setOnClickListener {
-            requireActivity().onBackPressed()
+            findNavController().popBackStack()
+            //requireActivity().onBackPressedDispatcher.onBackPressed()
         }
 
         lssaButtonDelete.setOnClickListener {
@@ -192,28 +177,15 @@ class SiteDashboardFragment : Fragment() {
         )
     }
 
+    //todo: move this stuff to the view model
     private fun hasPhotoForCategory(category: Category): Boolean {
         return photos.any { photo -> photo.category == category }
     }
 
     private fun loadSiteData() {
-        val db = dbHelper.readableDatabase
+        lssaTextViewSiteName.text = viewModel.site?.name ?: throw IllegalStateException("A site has not been selected.")
 
-        //TODO: use prescribed "use" method from db
-        try {
-            site = dbHelper.getSite(db, siteId)
-            site?.let { s ->
-                lssaTextViewSiteName.text = s.name
-            }
-
-            photos = dbHelper.getPhotosBySite(db, siteId).toList()
-
-            //could keep the code for the method here completely? it's only ever called once either way
-            updateSectionStatuses()
-
-        } finally {
-            db.close()
-        }
+        updateSectionStatuses()
     }
 
     private fun updateSectionStatuses() {
@@ -273,7 +245,7 @@ class SiteDashboardFragment : Fragment() {
         // ¯\_ (ツ)_/¯
         AlertDialog.Builder(requireContext())
             .setTitle("Delete Site")
-            .setMessage("Are you sure you want to delete '${site?.name}'? This will also delete all related data.")
+            .setMessage("Are you sure you want to delete '${viewModel.site?.name}'? This will also delete all related data.")
             .setPositiveButton("Delete") { _, _ ->
                 deleteSite()
             }
@@ -282,15 +254,12 @@ class SiteDashboardFragment : Fragment() {
     }
 
     private fun deleteSite() {
-        val db = dbHelper.writableDatabase
         try {
-            dbHelper.deleteSite(db, siteId)
+           viewModel.deleteSite()
             Toast.makeText(requireContext(), "Site deleted successfully", Toast.LENGTH_SHORT).show()
             requireActivity().onBackPressed()
         } catch (e: Exception) {
             Toast.makeText(requireContext(), "Error deleting site: ${e.message}", Toast.LENGTH_SHORT).show()
-        } finally {
-            db.close()
         }
     }
 }

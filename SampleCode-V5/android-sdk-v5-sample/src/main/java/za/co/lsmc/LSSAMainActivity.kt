@@ -17,12 +17,4 @@ class LSSAMainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.lssa_main_activity)
     }
-
-    fun loadSiteDashboard(siteId: Long) {
-        val navController = findNavController(R.id.navLssaMainFragContainerView)
-        val bundle = Bundle().apply {
-            putLong("siteId", siteId)
-        }
-        navController.navigate(R.id.action_siteList_to_siteDashboard, bundle)
-    }
 }
