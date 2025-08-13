@@ -128,7 +128,8 @@ class SiteDashboardFragment : Fragment() {
     //LEFT SIDE "actions"
     private fun createSectionsList(): List<SectionStatus> {
         return listOf(
-            //rest is self-explanatory
+
+            //self-explanatory
             SectionStatus("POI Center Photo", Category.POI, hasPhotoForCategory(Category.POI), false, 0),
             SectionStatus("TSO Orbit Photos", Category.TSO, hasPhotoForCategory(Category.TSO), false, 0),
             SectionStatus("Access Route / Road Photos", Category.ACCESS_ROUTE, hasPhotoForCategory(Category.ACCESS_ROUTE), false, 0),
