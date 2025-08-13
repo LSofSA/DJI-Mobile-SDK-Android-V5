@@ -8,7 +8,6 @@ import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import dji.sampleV5.aircraft.R
-import za.co.lsmc.data.Photo
 import za.co.lsmc.models.SectionStatus
 
 class SectionStatusAdapter(
@@ -27,7 +26,7 @@ class SectionStatusAdapter(
             .inflate(R.layout.lssa_item_section_status, parent, false)
 
         val section = sections[position]
-        val statusIcon = view.findViewById<ImageView>(R.id.lssaImageViewSectionStatus)
+        val statusIcon = view.findViewById<ImageView>(R.id.lssaButtonDeletePhotosAction)
         val sectionName = view.findViewById<TextView>(R.id.lssaTextViewSectionName)
 
         sectionName.text = section.name
