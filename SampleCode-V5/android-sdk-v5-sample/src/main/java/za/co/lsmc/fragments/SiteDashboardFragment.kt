@@ -54,9 +54,6 @@ class SiteDashboardFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         lssaTextViewSiteName = view.findViewById(R.id.lssaTextViewSiteName)
-        lssaTextViewSiteStatus = view.findViewById(R.id.lssaTextViewSiteStatus)
-        lssaTextViewPhotoCount = view.findViewById(R.id.lssaTextViewPhotoCount)
-        lssaTextViewHeadFrameCount = view.findViewById(R.id.lssaTextViewHeadFrameCount)
 
         loadSiteData()
     }
