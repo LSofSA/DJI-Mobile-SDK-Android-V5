@@ -27,7 +27,7 @@ class SiteDashboardFragment : Fragment() {
 
     private lateinit var dbHelper: SiteSurveyDbHelper
     private var siteId: Long = -1
-    private var site: Site? = null
+    private var site: Site? = null  // TODO: rather use lateInit perhaps? I this might be why site is null when we navigate here
 
     private lateinit var lssaTextViewSiteName: TextView
     private lateinit var lssaButtonBack: Button
