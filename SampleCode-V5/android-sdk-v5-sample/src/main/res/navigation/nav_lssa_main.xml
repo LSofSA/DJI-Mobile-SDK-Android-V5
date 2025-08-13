@@ -40,11 +40,17 @@
         <argument
             android:name="siteId"
             app:argType="long" />
+        <action
+            android:id="@+id/action_siteDashboardFragment_to_LSSA_Fragment_Access_Route"
+            app:destination="@id/LSSA_Fragment_Access_Route" />
     </fragment>
+
     <fragment
         android:id="@+id/LSSA_Fragment_Access_Route"
         android:name="za.co.lsmc.fragments.AccessRoute"
         android:label="lssa_fragment_access_route"
-        tools:layout="@layout/lssa_fragment_access_route" />
+        tools:layout="@layout/lssa_fragment_access_route" >
+    </fragment>
+
 
 </navigation>

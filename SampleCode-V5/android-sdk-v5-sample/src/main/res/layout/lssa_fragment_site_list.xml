@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    android:background="@color/lssa_background"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="8dp">
 
-    <!-- The plan is to merge this with the main one like the start screen on the wiki, but for the sake of testing I'll stick to this one -->
+    <!-- The plan is to merge this with the main one like the start screen on the wiki,
+    but for the sake of testing I'll stick to this one -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="16dp"
-        android:background="@android:color/white"
-        android:elevation="2dp">
+        android:padding="8dp">
 
         <EditText
             android:id="@+id/lssaEditTextSiteName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="Site name"
+            android:hint="Enter site name [Country - Customer Name - Site ID - Date]"
             android:inputType="text"
             android:maxLines="1"
             android:layout_marginEnd="8dp" />
