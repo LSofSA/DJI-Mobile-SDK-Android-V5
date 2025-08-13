@@ -33,8 +33,8 @@ class SiteListAdapter(
         val site = sites[position]
 
         holder.lssaTextViewSiteName.text = site.name
-        val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
-        holder.lssaTextViewSiteDate.text = site.completed?.let { dateFormat.format(it) } ?: "Completed"
+        val dateFormat = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())
+        holder.lssaTextViewSiteDate.text = site.completed?.let { dateFormat.format(it) } ?: "Incomplete"
 
         holder.itemView.setOnClickListener {
             onSiteClick(site)
