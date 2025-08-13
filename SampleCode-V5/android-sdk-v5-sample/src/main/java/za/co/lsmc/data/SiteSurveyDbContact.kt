@@ -9,7 +9,7 @@ object SiteSurveyDbContact {
         const val COLUMN_NAME_COMPLETED = "Completed"
 
         const val CREATE_TABLE = "CREATE TABLE $TABLE_NAME (\n" +
-                "$COLUMN_NAME_ID INTEGER PRIMARY KEY AUTOINCREMENT,'\n" +
+                "$COLUMN_NAME_ID INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
                 "$COLUMN_NAME_NAME TEXT NOT NULL,\n" +
                 "$COLUMN_NAME_COMPLETED BIGINT)"
     }
@@ -21,8 +21,8 @@ object SiteSurveyDbContact {
         const val COLUMN_NAME_ALTITUDE = "Altitude"
 
         const val CREATE_TABLE = "CREATE TABLE $TABLE_NAME (\n" +
-                "$COLUMN_NAME_ID INTEGER PRIMARY KEY AUTOINCREMENT,'\n" +
-                "$COLUMN_NAME_SITE_ID INTEGER REFERENCES ${SiteTable.TABLE_NAME} ON DELETE CASCADE,'\n" +
+                "$COLUMN_NAME_ID INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
+                "$COLUMN_NAME_SITE_ID INTEGER REFERENCES ${SiteTable.TABLE_NAME} ON DELETE CASCADE,\n" +
                 "$COLUMN_NAME_ALTITUDE REAL NOT NULL)"
     }
 
