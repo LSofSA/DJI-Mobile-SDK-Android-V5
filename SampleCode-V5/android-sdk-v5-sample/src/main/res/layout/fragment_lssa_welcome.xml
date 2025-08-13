@@ -15,26 +15,10 @@
         android:padding="16dp"
         android:gravity="center_vertical">
 
-        <LinearLayout
+        <TextView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <EditText
-                android:id="@+id/tvSDKStatus"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="Enter a site name"
-                android:textSize="16sp"
-                android:textColor="@color/lssa_text"
-                />
-
-            <Button
-                android:text="+"
-
-                android:layout_width="48dp"
-                android:layout_height="48dp"/>
-        </LinearLayout>
+            android:text="LSSA Aerial Survey"
+            android:layout_height="match_parent"/>
     </LinearLayout>
 
 </FrameLayout>
