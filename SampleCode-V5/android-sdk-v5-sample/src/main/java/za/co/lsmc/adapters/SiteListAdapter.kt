@@ -19,7 +19,6 @@ class SiteListAdapter(
 
     class SiteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val lssaTextViewSiteName: TextView = itemView.findViewById(R.id.lssaTextViewSiteName)
-        val lssaTextViewSiteStatus: TextView = itemView.findViewById(R.id.lssaTextViewSiteStatus)
         val lssaTextViewSiteDate: TextView = itemView.findViewById(R.id.lssaTextViewSiteDate)
         val lssaButtonDeleteSite: ImageButton = itemView.findViewById(R.id.lssaButtonDeleteSite)
     }
@@ -34,15 +33,8 @@ class SiteListAdapter(
         val site = sites[position]
 
         holder.lssaTextViewSiteName.text = site.name
-
-        if (site.completed != null) {
-            holder.lssaTextViewSiteStatus.text = "Completed"
-            val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
-            holder.lssaTextViewSiteDate.text = dateFormat.format(site.completed)
-        } else {
-            holder.lssaTextViewSiteStatus.text = "In Progress"
-            holder.lssaTextViewSiteDate.text = "Not completed"
-        }
+        val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+        holder.lssaTextViewSiteDate.text = site.completed?.let { dateFormat.format(it) } ?: "Completed"
 
         holder.itemView.setOnClickListener {
             onSiteClick(site)
