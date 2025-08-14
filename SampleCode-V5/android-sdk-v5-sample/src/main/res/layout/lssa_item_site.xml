@@ -52,7 +52,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_alignParentEnd="true"
-            android:background="@color/red"
+            android:background="@color/lssa_red"
             android:contentDescription="Delete site"
             android:padding="8dp"
             android:src="@drawable/ic_close" />

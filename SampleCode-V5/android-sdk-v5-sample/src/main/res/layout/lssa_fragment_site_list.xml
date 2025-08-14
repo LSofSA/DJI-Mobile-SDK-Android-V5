@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/lssa_background"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -11,8 +12,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="8dp">
+        android:padding="8dp"
+        android:orientation="horizontal">
 
         <EditText
             android:id="@+id/lssaEditTextSiteName"
@@ -27,18 +28,64 @@
         <Button
             android:id="@+id/lssaButtonAddSite"
             android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_height="match_parent"
             android:text="+"
-            android:textSize="28sp"
-            android:background="@color/colorAccent"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:background="@color/lssa_red"
             android:textColor="@android:color/white" />
 
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/lssaRecyclerViewSites"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="8dp" />
+        android:layout_height="match_parent">
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/lssaRecyclerViewSites"
+            android:layout_width="match_parent"
+            android:layout_marginTop="8dp"
+            android:layout_height="match_parent" />
+
+        <LinearLayout
+            android:id="@+id/lssaSiteListEmptyStateLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:gravity="center"
+                android:text="No sites! Please enter the folder name for a new site and then click the '+' button to create it"
+                android:textColor="@color/lssa_text"
+                android:textSize="18sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:gravity="center"
+                android:text="The format should be: Country - customer name - site ID - date"
+                android:textColor="@color/lssa_text_secondary"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="example: UK-CUSTOMER-12345-111221"
+                android:textColor="@color/lssa_text_secondary"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+    </FrameLayout>
 
 </LinearLayout>
