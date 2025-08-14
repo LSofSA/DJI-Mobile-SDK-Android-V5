@@ -119,7 +119,6 @@ class SiteListFragment : Fragment() {
         try {
             viewModel.deleteSite()
             loadSites()
-            //adapter.notifyItemRemoved(sites.indexOf(viewModel.site))
             viewModel.site = null
             Toast.makeText(requireContext(), "Site deleted successfully", Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {

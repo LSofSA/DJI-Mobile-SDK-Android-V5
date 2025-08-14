@@ -28,7 +28,7 @@ class SiteDashboardFragment : Fragment() {
     private val viewModel: LSSASiteSurveyViewModel by activityViewModels()
 
     private lateinit var lssaTextViewSiteName: TextView
-    private lateinit var lssaButtonBack: Button
+    private lateinit var lssaSiteDashboardButtonBack: Button
     private lateinit var lssaButtonDelete: Button
     private lateinit var lssaListViewSections: ListView
     private lateinit var lssaGridViewActions: GridView
@@ -56,7 +56,7 @@ class SiteDashboardFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         lssaTextViewSiteName = view.findViewById(R.id.lssaTextViewSiteName)
-        lssaButtonBack = view.findViewById(R.id.lssaButtonBack)
+        lssaSiteDashboardButtonBack = view.findViewById(R.id.lssaSiteDashboardButtonBack)
         lssaButtonDelete = view.findViewById(R.id.lssaButtonDelete)
         lssaListViewSections = view.findViewById(R.id.lssaListViewSections)
         lssaGridViewActions = view.findViewById(R.id.lssaGridViewActions)
@@ -86,7 +86,7 @@ class SiteDashboardFragment : Fragment() {
     }
 
     private fun setupClickListeners() {
-        lssaButtonBack.setOnClickListener {
+        lssaSiteDashboardButtonBack.setOnClickListener {
             findNavController().popBackStack()
             //requireActivity().onBackPressedDispatcher.onBackPressed()
         }
