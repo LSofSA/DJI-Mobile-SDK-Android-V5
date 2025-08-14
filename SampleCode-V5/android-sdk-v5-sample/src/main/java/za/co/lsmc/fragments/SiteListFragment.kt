@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
@@ -27,6 +28,7 @@ class SiteListFragment : Fragment() {
     private lateinit var lssaEditTextSiteName: EditText
     private lateinit var lssaButtonAddSite: Button
     private lateinit var adapter: SiteListAdapter
+    private lateinit var lssaSiteListEmptyStateLayout: LinearLayout
     private val sites = mutableListOf<Site>()
 
     private val viewModel: LSSASiteSurveyViewModel by activityViewModels()
@@ -48,6 +50,7 @@ class SiteListFragment : Fragment() {
         lssaRecyclerViewSites = view.findViewById(R.id.lssaRecyclerViewSites)
         lssaEditTextSiteName = view.findViewById(R.id.lssaEditTextSiteName)
         lssaButtonAddSite = view.findViewById(R.id.lssaButtonAddSite)
+        lssaSiteListEmptyStateLayout = view.findViewById(R.id.lssaSiteListEmptyStateLayout)
 
         setupRecyclerView()
         setupAddButton()
@@ -90,13 +93,13 @@ class SiteListFragment : Fragment() {
         sites.clear()
         sites.addAll(viewModel.loadSites())
         adapter.notifyDataSetChanged()
+        checkList()
     }
 
     private fun addSite(name: String) {
         try {
             viewModel.addSite(name)
             loadSites()
-            //adapter.notifyItemInserted(sites.size - 1)
             lssaEditTextSiteName.text.clear()
             Toast.makeText(requireContext(), "Site added successfully", Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
@@ -107,7 +110,7 @@ class SiteListFragment : Fragment() {
     private fun showDeleteConfirmation() {
         AlertDialog.Builder(requireContext())
             .setTitle("Delete Site")
-            .setMessage("Are you sure you want to delete '${viewModel.site}'? This will also delete all related data.")
+            .setMessage("Are you sure you want to delete '${viewModel.site?.name}'? This will also delete all related data.")
             .setPositiveButton("Delete") { _, _ ->
                 deleteSite()
             }
@@ -123,6 +126,14 @@ class SiteListFragment : Fragment() {
             Toast.makeText(requireContext(), "Site deleted successfully", Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
             Toast.makeText(requireContext(), "Error deleting site: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun checkList(){
+        if(sites.isEmpty()){
+            lssaSiteListEmptyStateLayout.visibility = View.VISIBLE
+        }else{
+            lssaSiteListEmptyStateLayout.visibility = View.GONE
         }
     }
 }
