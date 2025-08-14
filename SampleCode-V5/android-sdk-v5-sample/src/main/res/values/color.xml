@@ -86,5 +86,8 @@
 
     <color name="mission_edit_panel_container_bg">#FF111610</color>
     <color name="white_alpha_016">#29FFFFFF</color>
+
+    <color name="lssa_red">#CD071E</color>
+
 </resources>
 
