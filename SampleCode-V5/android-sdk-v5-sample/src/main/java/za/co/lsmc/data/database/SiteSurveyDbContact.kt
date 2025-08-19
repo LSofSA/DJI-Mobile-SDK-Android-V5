@@ -1,4 +1,4 @@
-package za.co.lsmc.data
+package za.co.lsmc.data.database
 
 object SiteSurveyDbContact {
 

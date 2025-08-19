@@ -1,6 +1,8 @@
-package za.co.lsmc.fragments
+package za.co.lsmc.ui.fragments
 
 import android.os.Bundle
+import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,12 +17,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import dji.sampleV5.aircraft.R
-import za.co.lsmc.adapters.ActionButtonAdapter
-import za.co.lsmc.adapters.SectionStatusAdapter
 import za.co.lsmc.data.Category
-import za.co.lsmc.data.Photo
+import za.co.lsmc.data.entities.Photo
 import za.co.lsmc.models.ActionButton
 import za.co.lsmc.models.SectionStatus
+import za.co.lsmc.ui.adapters.ActionButtonAdapter
+import za.co.lsmc.ui.adapters.SectionStatusAdapter
+import za.co.lsmc.ui.dialogs.PhotoGalleryDialog
 import za.co.lsmc.viewmodels.LSSASiteSurveyViewModel
 
 class SiteDashboardFragment : Fragment() {
@@ -42,6 +45,7 @@ class SiteDashboardFragment : Fragment() {
         fun newInstance(): SiteDashboardFragment {
             return SiteDashboardFragment()
         }
+        private const val TAG = "SiteDashboardFragment"
     }
 
     override fun onCreateView(
@@ -49,11 +53,13 @@ class SiteDashboardFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        Log.d(TAG, "onCreateView called")
         return inflater.inflate(R.layout.lssa_fragment_site_dashboard, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.d(TAG, "onViewCreated called")
 
         lssaTextViewSiteName = view.findViewById(R.id.lssaTextViewSiteName)
         lssaSiteDashboardButtonBack = view.findViewById(R.id.lssaSiteDashboardButtonBack)
@@ -64,17 +70,27 @@ class SiteDashboardFragment : Fragment() {
         setupAdapters()
         setupClickListeners()
         loadSiteData()
+        observePhotos()
     }
 
     private fun setupAdapters() {
+        Log.d(TAG, "setupAdapters called")
         val sections = createSectionsList()
+        Log.d(TAG, "Created ${sections.size} sections")
+
         sectionStatusAdapter = SectionStatusAdapter(requireContext(), sections)
         lssaListViewSections.adapter = sectionStatusAdapter
 
-        lssaListViewSections.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+        lssaListViewSections.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
+            Log.d(TAG, "ListView item clicked at position: $position")
             val section = sections[position]
+            Log.d(TAG, "Clicked section: ${section.name}, isParent: ${section.isParent}, category: ${section.category}")
+
             if (!section.isParent && section.category != null) {
-                onSectionClicked(section.category)
+                Log.d(TAG, "Valid section clicked, showing photo gallery for category: ${section.category}")
+                showPhotoGallery(section.category)
+            } else {
+                Log.d(TAG, "Section is parent or has no category, ignoring click")
             }
         }
 
@@ -86,18 +102,48 @@ class SiteDashboardFragment : Fragment() {
     }
 
     private fun setupClickListeners() {
+        Log.d(TAG, "setupClickListeners called")
         lssaSiteDashboardButtonBack.setOnClickListener {
+            Log.d(TAG, "Back button clicked")
             findNavController().popBackStack()
-            //requireActivity().onBackPressedDispatcher.onBackPressed()
         }
 
         lssaButtonDelete.setOnClickListener {
+            Log.d(TAG, "Delete button clicked")
             showDeleteConfirmation()
         }
     }
 
-    // actions for now will just display a toast, implementation still under works
+    private fun observePhotos() {
+        Log.d(TAG, "observePhotos called")
+        viewModel.getPhotosForCurrentSite().observe(viewLifecycleOwner) { photoList ->
+            Log.d(TAG, "Photos observed: ${photoList.size} photos")
+            photos = photoList
+            updateSectionStatuses()
+        }
+    }
+
+    private fun showPhotoGallery(category: Category) {
+        Log.d(TAG, "showPhotoGallery called for category: $category")
+        try {
+            val dialog = PhotoGalleryDialog(
+                requireContext(),
+                category,
+                viewModel
+            ) { selectedCategory ->
+                Log.d(TAG, "Take photos clicked for category: $selectedCategory")
+                onSectionClicked(selectedCategory)
+            }
+            Log.d(TAG, "PhotoGalleryDialog created, showing...")
+            dialog.show()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error showing photo gallery", e)
+            Toast.makeText(requireContext(), "Error showing photo gallery: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private fun onSectionClicked(category: Category) {
+        Log.d(TAG, "onSectionClicked called for category: $category")
         when (category) {
             Category.POI -> startPOIPhoto()
             Category.TSO -> startTOSPhotos()
@@ -110,17 +156,13 @@ class SiteDashboardFragment : Fragment() {
         }
     }
 
-    //LEFT SIDE "actions"
     private fun createSectionsList(): List<SectionStatus> {
+        Log.d(TAG, "createSectionsList called")
         return listOf(
-
-            //self-explanatory
             SectionStatus("POI Center Photo", Category.POI, hasPhotoForCategory(Category.POI), false, 0),
             SectionStatus("TSO Orbit Photos", Category.TSO, hasPhotoForCategory(Category.TSO), false, 0),
             SectionStatus("Access Route / Road Photos", Category.ACCESS_ROUTE, hasPhotoForCategory(Category.ACCESS_ROUTE), false, 0),
             SectionStatus("Feeder Run (Ladder) Photos", Category.FEEDER_RUN, hasPhotoForCategory(Category.FEEDER_RUN), false, 0),
-
-            // head frames and its sub sections
             SectionStatus("Head Frame Photos", null, false, true, 0),
             SectionStatus("   Down Orbit", Category.HF_DOWN, hasPhotoForCategory(Category.HF_DOWN), false, 1),
             SectionStatus("   Level Orbit", Category.HF_LEVEL, hasPhotoForCategory(Category.HF_LEVEL), false, 1),
@@ -129,7 +171,6 @@ class SiteDashboardFragment : Fragment() {
         )
     }
 
-    //RIGHT SIDE "actions" in the grid
     private fun createActionsList(): List<ActionButton> {
         return listOf(
             ActionButton(
@@ -153,13 +194,6 @@ class SiteDashboardFragment : Fragment() {
             ) {
                 startPOIPhoto()
             },
-            /*ActionButton(
-                title = "Head Frame Photos",
-                description = "Document head frames",
-                isEnabled = true
-            ) {
-                startHeadFramePhotos()
-            },*/
             ActionButton(
                 title = "Access Road Photos",
                 description = "Document access routes",
@@ -177,26 +211,32 @@ class SiteDashboardFragment : Fragment() {
         )
     }
 
-    //todo: move this stuff to the view model
     private fun hasPhotoForCategory(category: Category): Boolean {
         return photos.any { photo -> photo.category == category }
     }
 
     private fun loadSiteData() {
+        Log.d(TAG, "loadSiteData called")
         lssaTextViewSiteName.text = viewModel.site?.name ?: throw IllegalStateException("A site has not been selected.")
-
-        updateSectionStatuses()
+        viewModel.initializePhotoCountersFromDatabase()
     }
 
     private fun updateSectionStatuses() {
+        Log.d(TAG, "updateSectionStatuses called")
         val updatedSections = createSectionsList()
         sectionStatusAdapter = SectionStatusAdapter(requireContext(), updatedSections)
         lssaListViewSections.adapter = sectionStatusAdapter
 
-        lssaListViewSections.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+        lssaListViewSections.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
+            Log.d(TAG, "ListView item clicked at position: $position (updated)")
             val section = updatedSections[position]
+            Log.d(TAG, "Clicked section: ${section.name}, isParent: ${section.isParent}, category: ${section.category}")
+
             if (!section.isParent && section.category != null) {
-                onSectionClicked(section.category)
+                Log.d(TAG, "Valid section clicked, showing photo gallery for category: ${section.category}")
+                showPhotoGallery(section.category)
+            } else {
+                Log.d(TAG, "Section is parent or has no category, ignoring click")
             }
         }
 
@@ -208,7 +248,7 @@ class SiteDashboardFragment : Fragment() {
     }
 
     private fun startNewTowerScan() {
-        Toast.makeText(requireContext(), "Starting new tower scan", Toast.LENGTH_SHORT).show()
+        findNavController().navigate(R.id.action_siteDashboardFragment_to_towerScanFragment)
     }
 
     private fun continueTowerScan() {
@@ -224,26 +264,21 @@ class SiteDashboardFragment : Fragment() {
     }
 
     private fun startHeadFramePhoto(type: String) {
-        Toast.makeText(requireContext(), "Starting Head Frame photo: $type", Toast.LENGTH_SHORT).show()
     }
 
     private fun startHeadFramePhotos() {
-        Toast.makeText(requireContext(), "Starting Head Frame photos", Toast.LENGTH_SHORT).show()
     }
 
     private fun startAccessRoadPhotos() {
         findNavController().navigate(R.id.action_siteDashboardFragment_to_LSSA_Fragment_Access_Route)
-        Toast.makeText(requireContext(), "Starting Access Road photos", Toast.LENGTH_SHORT).show()
     }
 
     private fun startFeederRunPhotos() {
-        Toast.makeText(requireContext(), "Starting Feeder Run photos", Toast.LENGTH_SHORT).show()
+        findNavController().navigate(R.id.action_siteDashboardFragment_to_feederRunFragment)
     }
 
     private fun showDeleteConfirmation() {
-        // positive and negative buttons don't show at all... no clue if its the code or if maybe the text is just not visible
-        // ¯\_ (ツ)_/¯
-        AlertDialog.Builder(requireContext())
+        val dialog = AlertDialog.Builder(requireContext())
             .setTitle("Delete Site")
             .setMessage("Are you sure you want to delete '${viewModel.site?.name}'? This will also delete all related data.")
             .setPositiveButton("Delete") { _, _ ->
@@ -251,11 +286,17 @@ class SiteDashboardFragment : Fragment() {
             }
             .setNegativeButton("Cancel", null)
             .show()
+
+        val typedValue = TypedValue()
+        requireContext().theme.resolveAttribute(android.R.attr.textColorPrimary, typedValue, true)
+
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(typedValue.data)
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(typedValue.data)
     }
 
     private fun deleteSite() {
         try {
-           viewModel.deleteSite()
+            viewModel.deleteSite()
             Toast.makeText(requireContext(), "Site deleted successfully", Toast.LENGTH_SHORT).show()
             requireActivity().onBackPressed()
         } catch (e: Exception) {

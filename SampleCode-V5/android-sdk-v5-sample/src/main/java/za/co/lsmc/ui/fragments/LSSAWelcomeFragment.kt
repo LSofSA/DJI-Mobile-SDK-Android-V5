@@ -1,4 +1,4 @@
-package za.co.lsmc.fragments
+package za.co.lsmc.ui.fragments
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

@@ -4,13 +4,12 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
-import android.view.View
+import android.view.WindowManager
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import androidx.core.view.GravityCompat
 import dji.sampleV5.aircraft.R
-import dji.sampleV5.aircraft.databinding.ActivityMainBinding
 import dji.sampleV5.aircraft.databinding.LssaMainActivityBinding
 import dji.sampleV5.aircraft.models.BaseMainActivityVm
 import dji.sampleV5.aircraft.models.MSDKInfoVm
@@ -19,6 +18,8 @@ import dji.sampleV5.aircraft.models.globalViewModels
 import dji.sampleV5.aircraft.util.ToastUtils
 import dji.v5.utils.common.PermissionUtil
 import dji.v5.utils.common.StringUtils
+import za.co.lsmc.data.database.SiteSurveyDbHelper
+import za.co.lsmc.viewmodels.LSSASiteSurveyViewModel
 
 class LSSAMainActivity : AppCompatActivity(){
 
@@ -32,40 +33,43 @@ class LSSAMainActivity : AppCompatActivity(){
     init {
         permissionArray.apply {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-//                add(Manifest.permission.READ_MEDIA_IMAGES)
-//                add(Manifest.permission.READ_MEDIA_VIDEO)
-//                add(Manifest.permission.READ_MEDIA_AUDIO)
             } else {
                 add(Manifest.permission.READ_EXTERNAL_STORAGE)
                 add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
             }
         }
-   }
+    }
 
     private val baseMainActivityVm: BaseMainActivityVm by viewModels()
     private val msdkInfoVm: MSDKInfoVm by viewModels()
     private val msdkManagerVM: MSDKManagerVM by globalViewModels()
     private lateinit var binding: LssaMainActivityBinding
+    private val siteSurveyViewModel: LSSASiteSurveyViewModel by viewModels()
 
-    // methods
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         binding = LssaMainActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        init()
         initMSDKInfoView()
         observeSDKManager()
         checkPermissionAndRequest()
         setupListeners()
     }
 
+    private fun init(){
+        val dbHelper = SiteSurveyDbHelper(this)
+        siteSurveyViewModel.initDbHelper(dbHelper)
+    }
     private fun setupListeners() {
         binding.lssaBtnViewInfo.setOnClickListener {
-            binding.lssaNavigationView.visibility =
-                if (binding.lssaNavigationView.visibility == View.VISIBLE)
-                    View.GONE
-                else
-                    View.VISIBLE
+            if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                binding.drawerLayout.closeDrawer(GravityCompat.START)
+            } else {
+                binding.drawerLayout.openDrawer(GravityCompat.START)
+            }
         }
     }
 
@@ -99,7 +103,6 @@ class LSSAMainActivity : AppCompatActivity(){
         requestPermissionLauncher.launch(permissionArray.toArray(arrayOf()))
     }
 
-
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (checkPermission()) {
@@ -115,7 +118,6 @@ class LSSAMainActivity : AppCompatActivity(){
     }
 
     private fun handleAfterPermissionPermitted() {
-        //prepareTestingToolsActivity()
     }
 
     @SuppressLint("SetTextI18n")
@@ -125,7 +127,6 @@ class LSSAMainActivity : AppCompatActivity(){
             binding.textViewProductName.text = StringUtils.getResStr(R.string.product_name, it.productType.name)
             binding.textViewPackageProductCategory.text = StringUtils.getResStr(R.string.package_product_category, it.packageProductCategory)
             binding.textViewIsDebug.text = StringUtils.getResStr(R.string.is_sdk_debug, it.isDebug)
-            //binding.textCoreInfo.text = it.coreInfo.toString()
         }
 
         binding.lssaDjiSdkInfo.setOnClickListener {
@@ -137,7 +138,6 @@ class LSSAMainActivity : AppCompatActivity(){
 
     private fun showToast(content: String) {
         ToastUtils.showToast(content)
-
     }
 
     private fun observeSDKManager() {
@@ -147,9 +147,6 @@ class LSSAMainActivity : AppCompatActivity(){
                 ToastUtils.showToast("Register Success")
                 statusText = StringUtils.getResStr(this, R.string.registered)
                 msdkInfoVm.initListener()
-                /*handler.postDelayed({
-                    prepareUxActivity()
-                }, 5000)*/
             } else {
                 showToast("Register Failure: ${resultPair.second}")
                 statusText = StringUtils.getResStr(this, R.string.unregistered)
@@ -174,6 +171,11 @@ class LSSAMainActivity : AppCompatActivity(){
         }
     }
 
-
-
+    override fun onBackPressed() {
+        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
+        } else {
+            super.onBackPressed()
+        }
+    }
 }

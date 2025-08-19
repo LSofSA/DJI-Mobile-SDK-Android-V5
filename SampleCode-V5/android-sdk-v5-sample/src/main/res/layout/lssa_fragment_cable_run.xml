@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="za.co.lsmc.fragments.AccessRoute">
+    android:padding="8dp"
+    tools:context="za.co.lsmc.ui.fragments.CableRunFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/panel_left"
@@ -16,7 +17,7 @@
         app:layout_constraintVertical_bias="0">
 
         <Button
-            android:id="@+id/lssaAccessRouteButtonBack"
+            android:id="@+id/lssaCableRunButtonBack"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/lssa_nav_back"
@@ -27,16 +28,19 @@
             android:id="@+id/txtInterval"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
             android:text="@string/lssa_interval_s"
+            app:layout_constraintBottom_toBottomOf="@id/edtInterval"
+            app:layout_constraintEnd_toStartOf="@+id/edtInterval"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/edtInterval"
-            app:layout_constraintBottom_toBottomOf="@id/edtInterval" />
+            app:layout_constraintTop_toTopOf="@+id/edtInterval" />
 
         <EditText
             android:id="@+id/edtInterval"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:inputType="number"
+            android:text="10"
             android:hint="@string/lssa_interval_s"
             app:layout_constraintBottom_toTopOf="@id/btnInterval"
             app:layout_constraintEnd_toEndOf="parent"
@@ -46,6 +50,7 @@
             android:id="@+id/btnInterval"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
             android:text="@string/lssa_start_interval"
             app:layout_constraintBottom_toTopOf="@id/btnActionTakePic"
             app:layout_constraintStart_toStartOf="parent" />
@@ -57,8 +62,6 @@
             android:text="@string/lssa_take_photo"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
-
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -74,8 +77,9 @@
 
         <SurfaceView
             android:id="@+id/sv_camera_stream"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginStart="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/ll_live_info_layout"
             app:layout_constraintStart_toStartOf="parent"
@@ -90,7 +94,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center">
 

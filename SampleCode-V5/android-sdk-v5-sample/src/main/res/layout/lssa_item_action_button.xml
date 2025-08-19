@@ -6,38 +6,60 @@
     android:layout_margin="4dp"
     android:foreground="?android:attr/selectableItemBackground"
     android:clickable="true"
+    android:minHeight="100dp"
     android:focusable="true">
+    <androidx.constraintlayout.widget.ConstraintLayout android:layout_height="match_parent"
+        android:layout_width="match_parent">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="12dp"
-        android:gravity="center">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="128dp"
+            android:padding="32dp"
+            android:src="@drawable/ic_drone"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <!--The design in the wiki has images.. but for now I'll just stick to text with a description-->
-        <TextView
-            android:id="@+id/lssaTextViewActionTitle"
+        <LinearLayout
+            android:id="@+id/linearLayout2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:text="Dashboard Action"
-            android:textStyle="bold"
-            android:gravity="center"
-            android:textColor="@android:color/black" />
+            android:background="@color/lssa_red"
+            android:gravity="bottom"
+            android:orientation="vertical"
+            android:padding="12dp"
+            app:layout_constraintBottom_toBottomOf="parent">
 
-        <TextView
-            android:id="@+id/lssaTextViewActionDescription"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Dashboard Action Description"
-            android:textSize="12sp"
-            android:gravity="center"
-            android:textColor="@android:color/darker_gray"
-            android:layout_marginTop="4dp"
-            android:maxLines="3"
-            android:ellipsize="end" />
+            <TextView
+                android:id="@+id/lssaTextViewActionTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Dashboard Action"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:singleLine="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
-    </LinearLayout>
-
+            <TextView
+                android:id="@+id/lssaTextViewActionDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:singleLine="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:gravity="center"
+                android:maxLines="3"
+                android:scrollHorizontally="true"
+                android:text="Dashboard Action Description"
+                android:textColor="@android:color/white"
+                android:textSize="12sp" />
+        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

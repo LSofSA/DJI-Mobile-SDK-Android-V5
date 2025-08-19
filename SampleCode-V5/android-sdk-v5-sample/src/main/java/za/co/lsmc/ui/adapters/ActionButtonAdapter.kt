@@ -1,4 +1,4 @@
-package za.co.lsmc.adapters
+package za.co.lsmc.ui.adapters
 
 import android.content.Context
 import android.view.LayoutInflater

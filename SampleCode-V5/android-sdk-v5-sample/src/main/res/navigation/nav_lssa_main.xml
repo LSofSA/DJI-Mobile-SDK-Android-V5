@@ -8,7 +8,7 @@
     <!-- Welcome/Loading Screen -->
     <fragment
         android:id="@+id/lssaWelcome"
-        android:name="za.co.lsmc.fragments.LSSAWelcomeFragment"
+        android:name="za.co.lsmc.ui.fragments.LSSAWelcomeFragment"
         android:label="fragment_lssa_welcome"
         tools:layout="@layout/fragment_lssa_welcome" />
 
@@ -26,7 +26,7 @@
 
     <fragment
         android:id="@+id/siteListFragment"
-        android:name="za.co.lsmc.fragments.SiteListFragment"
+        android:name="za.co.lsmc.ui.fragments.SiteListFragment"
         android:label="Site List" >
         <action
             android:id="@+id/action_siteList_to_siteDashboard"
@@ -35,7 +35,7 @@
 
     <fragment
         android:id="@+id/siteDashboardFragment"
-        android:name="za.co.lsmc.fragments.SiteDashboardFragment"
+        android:name="za.co.lsmc.ui.fragments.SiteDashboardFragment"
         android:label="Site Dashboard" >
         <argument
             android:name="siteId"
@@ -43,14 +43,35 @@
         <action
             android:id="@+id/action_siteDashboardFragment_to_LSSA_Fragment_Access_Route"
             app:destination="@id/LSSA_Fragment_Access_Route" />
+        <action
+            android:id="@+id/action_siteDashboardFragment_to_feederRunFragment"
+            app:destination="@id/feederRunFragment" />
+        <action
+            android:id="@+id/action_siteDashboardFragment_to_towerScanFragment"
+            app:destination="@id/towerScanFragment" />
+        <action
+            android:id="@+id/action_siteDashboardFragment_to_lssaSiteSurveyMain"
+            app:destination="@id/lssaSiteSurveyMain" />
     </fragment>
 
     <fragment
         android:id="@+id/LSSA_Fragment_Access_Route"
-        android:name="za.co.lsmc.fragments.AccessRoute"
+        android:name="za.co.lsmc.ui.fragments.AccessRouteFragment"
         android:label="lssa_fragment_access_route"
-        tools:layout="@layout/lssa_fragment_access_route" >
+        tools:layout="@layout/lssa_fragment_access_route_capture" >
     </fragment>
+    <fragment
+        android:id="@+id/feederRunFragment"
+        android:name="za.co.lsmc.ui.fragments.FeederRunFragment"
+        android:label="LSSA Feeder Run Capture" />
+    <fragment
+        android:id="@+id/towerScanFragment"
+        android:name="za.co.lsmc.ui.fragments.TowerScanFragment"
+        android:label="TowerScanFragment" />
+    <fragment
+        android:id="@+id/cableRunFragment"
+        android:name="za.co.lsmc.ui.fragments.CableRunFragment"
+        android:label="CableRunFragment" />
 
 
 </navigation>

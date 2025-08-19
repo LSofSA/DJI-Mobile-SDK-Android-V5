@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/lssa_background"
-    tools:context="za.co.lsmc.fragments.LSSAWelcomeFragment"
+    tools:context="za.co.lsmc.ui.fragments.LSSAWelcomeFragment"
     tools:ignore="HardcodedText" >
 
     <LinearLayout

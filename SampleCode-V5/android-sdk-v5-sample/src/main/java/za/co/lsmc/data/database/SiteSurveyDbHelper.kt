@@ -1,10 +1,16 @@
-package za.co.lsmc.data
+package za.co.lsmc.data.database
 
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
+import za.co.lsmc.data.Category
+import za.co.lsmc.data.entities.HeadFrame
+import za.co.lsmc.data.entities.Photo
+import za.co.lsmc.data.entities.Save
+import za.co.lsmc.data.entities.Site
+import za.co.lsmc.data.entities.TowerScan
 import java.util.Date
 
 class SiteSurveyDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
@@ -107,7 +113,7 @@ class SiteSurveyDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_
         return null
     }
 
-    public fun getAllSites(db: SQLiteDatabase) : Array<Site> {
+    fun getAllSites(db: SQLiteDatabase) : Array<Site> {
         val projection = arrayOf(
             SiteSurveyDbContact.SiteTable.COLUMN_NAME_ID,
             SiteSurveyDbContact.SiteTable.COLUMN_NAME_NAME,
@@ -125,11 +131,16 @@ class SiteSurveyDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_
         val items = mutableListOf<Site>()
         with(cursor) {
             while (moveToNext()) {
-                items.add(Site(
+                val completedColumnIndex = getColumnIndexOrThrow(SiteSurveyDbContact.SiteTable.COLUMN_NAME_COMPLETED)
+                val completedDate = if (isNull(completedColumnIndex)) null else Date(getLong(completedColumnIndex))
+
+                items.add(
+                    Site(
                     getLong(getColumnIndexOrThrow(SiteSurveyDbContact.SiteTable.COLUMN_NAME_ID)),
                     getString(getColumnIndexOrThrow(SiteSurveyDbContact.SiteTable.COLUMN_NAME_NAME)),
-                    Date(getLong(getColumnIndexOrThrow(SiteSurveyDbContact.SiteTable.COLUMN_NAME_COMPLETED)))
-                ))
+                    completedDate
+                )
+                )
             }
             close()
         }
@@ -245,13 +256,15 @@ class SiteSurveyDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_
         val items = mutableListOf<Photo>()
         with(cursor) {
             while (moveToNext()) {
-                items.add(Photo(
+                items.add(
+                    Photo(
                     getLong(getColumnIndexOrThrow(SiteSurveyDbContact.PhotoTable.COLUMN_NAME_ID)),
                     getLong(getColumnIndexOrThrow(SiteSurveyDbContact.PhotoTable.COLUMN_NAME_SITE_ID)),
                     getString(getColumnIndexOrThrow(SiteSurveyDbContact.PhotoTable.COLUMN_NAME_FILENAME)),
                     Category.values()[getInt(getColumnIndexOrThrow(SiteSurveyDbContact.PhotoTable.COLUMN_NAME_CATEGORY))],
                     getDouble(getColumnIndexOrThrow(SiteSurveyDbContact.PhotoTable.COLUMN_NAME_NUMBER))
-                ))
+                )
+                )
             }
             close()
         }
@@ -280,17 +293,79 @@ class SiteSurveyDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_
         val items = mutableListOf<Photo>()
         with(cursor) {
             while (moveToNext()) {
-                items.add(Photo(
+                items.add(
+                    Photo(
                     getLong(getColumnIndexOrThrow(SiteSurveyDbContact.PhotoTable.COLUMN_NAME_ID)),
                     getLong(getColumnIndexOrThrow(SiteSurveyDbContact.PhotoTable.COLUMN_NAME_SITE_ID)),
                     getString(getColumnIndexOrThrow(SiteSurveyDbContact.PhotoTable.COLUMN_NAME_FILENAME)),
                     Category.values()[getInt(getColumnIndexOrThrow(SiteSurveyDbContact.PhotoTable.COLUMN_NAME_CATEGORY))],
                     getDouble(getColumnIndexOrThrow(SiteSurveyDbContact.PhotoTable.COLUMN_NAME_NUMBER))
-                ))
+                )
+                )
             }
             close()
         }
         return items.toTypedArray()
+    }
+
+    public fun getMaxPhotoNumberForCategory(db: SQLiteDatabase, siteId: Long, category: Category): Double? {
+        val projection = arrayOf("MAX(${SiteSurveyDbContact.PhotoTable.COLUMN_NAME_NUMBER})")
+        val selection = "${SiteSurveyDbContact.PhotoTable.COLUMN_NAME_SITE_ID} = ? AND ${SiteSurveyDbContact.PhotoTable.COLUMN_NAME_CATEGORY} = ?"
+        val selectionArgs = arrayOf(siteId.toString(), category.ordinal.toString())
+
+        val cursor = db.query(
+            SiteSurveyDbContact.PhotoTable.TABLE_NAME,
+            projection,
+            selection,
+            selectionArgs,
+            null, null, null
+        )
+
+        cursor.use {
+            if (it.moveToFirst() && !it.isNull(0)) {
+                return it.getDouble(0)
+            }
+        }
+        return null
+    }
+
+    public fun getPhotosBySiteAndCategory(db: SQLiteDatabase, siteId: Long, category: Category): List<Photo> {
+        val projection = arrayOf(
+            SiteSurveyDbContact.PhotoTable.COLUMN_NAME_ID,
+            SiteSurveyDbContact.PhotoTable.COLUMN_NAME_SITE_ID,
+            SiteSurveyDbContact.PhotoTable.COLUMN_NAME_FILENAME,
+            SiteSurveyDbContact.PhotoTable.COLUMN_NAME_CATEGORY,
+            SiteSurveyDbContact.PhotoTable.COLUMN_NAME_NUMBER
+        )
+        val selection = "${SiteSurveyDbContact.PhotoTable.COLUMN_NAME_SITE_ID} = ? AND ${SiteSurveyDbContact.PhotoTable.COLUMN_NAME_CATEGORY} = ?"
+        val selectionArgs = arrayOf(siteId.toString(), category.ordinal.toString())
+        val orderBy = "${SiteSurveyDbContact.PhotoTable.COLUMN_NAME_NUMBER} ASC"
+
+        val cursor = db.query(
+            SiteSurveyDbContact.PhotoTable.TABLE_NAME,
+            projection,
+            selection,
+            selectionArgs,
+            null, null,
+            orderBy
+        )
+
+        val photos = mutableListOf<Photo>()
+        cursor.use {
+            while (it.moveToNext()) {
+                photos.add(
+                    Photo(
+                    it.getLong(it.getColumnIndexOrThrow(SiteSurveyDbContact.PhotoTable.COLUMN_NAME_ID)),
+                    it.getLong(it.getColumnIndexOrThrow(SiteSurveyDbContact.PhotoTable.COLUMN_NAME_SITE_ID)),
+                    it.getString(it.getColumnIndexOrThrow(SiteSurveyDbContact.PhotoTable.COLUMN_NAME_FILENAME)),
+                    Category.values()[it.getInt(it.getColumnIndexOrThrow(SiteSurveyDbContact.PhotoTable.COLUMN_NAME_CATEGORY))],
+                    it.getDouble(it.getColumnIndexOrThrow(SiteSurveyDbContact.PhotoTable.COLUMN_NAME_NUMBER))
+                )
+                )
+            }
+        }
+
+        return photos
     }
 
     ////////////////////////////
@@ -388,11 +463,13 @@ class SiteSurveyDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_
         val items = mutableListOf<HeadFrame>()
         with(cursor) {
             while (moveToNext()) {
-                items.add(HeadFrame(
+                items.add(
+                    HeadFrame(
                     getLong(getColumnIndexOrThrow(SiteSurveyDbContact.HeadFrameTable.COLUMN_NAME_ID)),
                     getLong(getColumnIndexOrThrow(SiteSurveyDbContact.HeadFrameTable.COLUMN_NAME_SITE_ID)),
                     getDouble(getColumnIndexOrThrow(SiteSurveyDbContact.HeadFrameTable.COLUMN_NAME_ALTITUDE))
-                ))
+                )
+                )
             }
             close()
         }
@@ -419,11 +496,13 @@ class SiteSurveyDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_
         val items = mutableListOf<HeadFrame>()
         with(cursor) {
             while (moveToNext()) {
-                items.add(HeadFrame(
+                items.add(
+                    HeadFrame(
                     getLong(getColumnIndexOrThrow(SiteSurveyDbContact.HeadFrameTable.COLUMN_NAME_ID)),
                     getLong(getColumnIndexOrThrow(SiteSurveyDbContact.HeadFrameTable.COLUMN_NAME_SITE_ID)),
                     getDouble(getColumnIndexOrThrow(SiteSurveyDbContact.HeadFrameTable.COLUMN_NAME_ALTITUDE))
-                ))
+                )
+                )
             }
             close()
         }

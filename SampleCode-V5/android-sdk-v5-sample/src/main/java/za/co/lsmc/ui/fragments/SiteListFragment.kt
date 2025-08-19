@@ -1,6 +1,7 @@
-package za.co.lsmc.fragments
+package za.co.lsmc.ui.fragments
 
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,15 +12,13 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dji.sampleV5.aircraft.R
-import za.co.lsmc.LSSAMainActivity
-import za.co.lsmc.adapters.SiteListAdapter
-import za.co.lsmc.data.Site
-import za.co.lsmc.data.SiteSurveyDbHelper
+import za.co.lsmc.data.database.SiteSurveyDbHelper
+import za.co.lsmc.data.entities.Site
+import za.co.lsmc.ui.adapters.SiteListAdapter
 import za.co.lsmc.viewmodels.LSSASiteSurveyViewModel
 
 class SiteListFragment : Fragment() {
@@ -55,12 +54,12 @@ class SiteListFragment : Fragment() {
         setupRecyclerView()
         setupAddButton()
         loadSites()
-
     }
 
     private fun setupRecyclerView() {
         adapter = SiteListAdapter(
             sites,
+            viewModel,
             onSiteClick = { site ->
                 viewModel.site = site
                 findNavController().navigate(R.id.action_siteList_to_siteDashboard)
@@ -87,12 +86,10 @@ class SiteListFragment : Fragment() {
     }
 
     private fun loadSites() {
-       /* val db = dbHelper.readableDatabase
-        val siteArray = dbHelper.getAllSites(db)*/
-
         sites.clear()
         sites.addAll(viewModel.loadSites())
         adapter.notifyDataSetChanged()
+
         checkList()
     }
 
@@ -108,7 +105,7 @@ class SiteListFragment : Fragment() {
     }
 
     private fun showDeleteConfirmation() {
-        AlertDialog.Builder(requireContext())
+        val dialog = AlertDialog.Builder(requireContext())
             .setTitle("Delete Site")
             .setMessage("Are you sure you want to delete '${viewModel.site?.name}'? This will also delete all related data.")
             .setPositiveButton("Delete") { _, _ ->
@@ -116,6 +113,12 @@ class SiteListFragment : Fragment() {
             }
             .setNegativeButton("Cancel", null)
             .show()
+
+        val typedValue = TypedValue()
+        requireContext().theme.resolveAttribute(android.R.attr.textColorPrimary, typedValue, true)
+
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(typedValue.data)
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(typedValue.data)
     }
 
     private fun deleteSite() {

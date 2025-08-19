@@ -1,11 +1,10 @@
-package za.co.lsmc.adapters
+package za.co.lsmc.ui.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -28,22 +27,21 @@ class SectionStatusAdapter(
             .inflate(R.layout.lssa_item_section_status, parent, false)
 
         val section = sections[position]
-        val statusIcon = view.findViewById<Button>(R.id.lssaButtonDeletePhotosAction)
+        val statusIcon = view.findViewById<ImageView>(R.id.lssaImageViewSectionStatus)
         val sectionName = view.findViewById<TextView>(R.id.lssaTextViewSectionName)
 
         sectionName.text = section.name
 
-        val statusColour = ContextCompat.getColor(context, if (section.isCompleted) R.color.green else R.color.red)
-        val statusContent = if (section.isCompleted)  R.drawable.ic_check else R.drawable.ic_close
-
-        //TODO update this
-        //statusIcon.setBackgroundResource(statusColour)
-        //statusIcon.setBackground(statusContent)
-
-
-        if(section.isParent)
-        {
+        if(section.isParent) {
             statusIcon.visibility = View.GONE
+        } else {
+            statusIcon.visibility = View.VISIBLE
+
+            val statusDrawable = if (section.isCompleted) R.drawable.ic_check else R.drawable.ic_close
+            val statusColor = ContextCompat.getColor(context, if (section.isCompleted) R.color.green else R.color.red)
+
+            statusIcon.setImageResource(statusDrawable)
+            statusIcon.setColorFilter(statusColor)
         }
 
         return view

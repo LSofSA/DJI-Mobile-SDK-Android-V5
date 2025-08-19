@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -11,7 +10,7 @@
     android:foreground="?android:attr/selectableItemBackground"
     tools:ignore="HardcodedText">
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="8dp"
@@ -20,42 +19,49 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/lssaTextViewSiteName"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
+            android:text="Site Name"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/lssaButtonDeleteSite"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/lssaTextViewSitePhotoCounter"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Total Photos:"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toStartOf="@+id/lssaButtonDeleteSite"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lssaTextViewSiteName" />
+
+        <TextView
+            android:id="@+id/lssaTextViewSiteDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:layout_toStartOf="@+id/lssaButtonDeleteSite"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/lssaTextViewSiteName"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="Site Name"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/lssaTextViewSiteDate"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="end|center"
-                android:text="1900/01/01"
-                tools:textAlignment="center" />
-
-        </LinearLayout>
+            android:text="1900/01/01"
+            app:layout_constraintBottom_toBottomOf="@+id/lssaButtonDeleteSite"
+            app:layout_constraintEnd_toStartOf="@+id/lssaButtonDeleteSite"
+            app:layout_constraintTop_toBottomOf="@id/lssaTextViewSiteName"
+            tools:textAlignment="center" />
 
         <ImageButton
             android:id="@+id/lssaButtonDeleteSite"
             android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_alignParentEnd="true"
+            android:layout_height="match_parent"
             android:background="@color/lssa_red"
             android:contentDescription="Delete site"
             android:padding="8dp"
-            android:src="@drawable/ic_close" />
-    </RelativeLayout>
+            android:src="@drawable/ic_close"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
