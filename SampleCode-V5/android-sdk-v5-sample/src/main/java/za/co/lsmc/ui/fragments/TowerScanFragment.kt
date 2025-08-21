@@ -13,13 +13,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import dji.sampleV5.aircraft.R
-import za.co.lsmc.models.enums.Category
+import za.co.lsmc.data.database.SiteSurveyDbHelper
 import za.co.lsmc.models.HeadFrameCaptureStep
 import za.co.lsmc.models.OrbitRadiusStep
 import za.co.lsmc.models.OrbitStep
-import za.co.lsmc.models.POICenterStep
+import za.co.lsmc.models.PoiCenterStep
 import za.co.lsmc.models.TowerScanStep
-import za.co.lsmc.data.database.SiteSurveyDbHelper
+import za.co.lsmc.models.enums.Category
 import za.co.lsmc.viewmodels.LSSASiteSurveyViewModel
 
 class TowerScanFragment : Fragment() {
@@ -70,7 +70,7 @@ class TowerScanFragment : Fragment() {
     private fun initializeSteps() {
         steps = listOf(
             HeadFrameCaptureStep(this, viewModel),
-            POICenterStep(this, viewModel),
+            PoiCenterStep(this, viewModel),
             OrbitRadiusStep(this, viewModel),
             OrbitStep(this, viewModel)
         )
