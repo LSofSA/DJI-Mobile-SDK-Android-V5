@@ -13,7 +13,7 @@ import za.co.lsmc.ui.adapters.TowerScanStepAdapter
 import za.co.lsmc.ui.fragments.TowerScanFragment
 import za.co.lsmc.viewmodels.LSSASiteSurveyViewModel
 
-class POICenterStep(
+class PoiCenterStep(
     private val fragment: TowerScanFragment,
     private val viewModel: LSSASiteSurveyViewModel
 ) : TowerScanStep {
