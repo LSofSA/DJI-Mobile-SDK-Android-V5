@@ -36,7 +36,7 @@ import dji.v5.manager.datacenter.media.PullMediaFileListParam
 import dji.v5.manager.interfaces.ICameraStreamManager
 import dji.v5.utils.common.NumberUtils
 import dji.v5.utils.common.StringUtils
-import za.co.lsmc.data.Category
+import za.co.lsmc.models.enums.Category
 import za.co.lsmc.viewmodels.LSSASiteSurveyViewModel
 import java.util.Timer
 import java.util.TimerTask
@@ -209,7 +209,7 @@ class AccessRouteFragment : Fragment() {
 
         mediaManager?.let { manager ->
             val param = PullMediaFileListParam.Builder()
-                .count(50)
+                .count(1)
                 .mediaFileIndex(0)
                 .orderType(FileListRequestTimeOrderType.NEW_FIRST)
                 .build()

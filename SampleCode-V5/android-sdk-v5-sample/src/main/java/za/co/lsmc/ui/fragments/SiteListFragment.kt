@@ -53,6 +53,7 @@ class SiteListFragment : Fragment() {
 
         setupRecyclerView()
         setupAddButton()
+        observeViewModel()
         loadSites()
     }
 
@@ -85,12 +86,27 @@ class SiteListFragment : Fragment() {
         }
     }
 
-    private fun loadSites() {
-        sites.clear()
-        sites.addAll(viewModel.loadSites())
-        adapter.notifyDataSetChanged()
+    private fun observeViewModel() {
+        viewModel.sites.observe(viewLifecycleOwner) { siteList ->
+            sites.clear()
+            sites.addAll(siteList)
+            adapter.notifyDataSetChanged()
+            checkList()
+        }
 
-        checkList()
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            lssaButtonAddSite.isEnabled = !isLoading
+        }
+
+        viewModel.error.observe(viewLifecycleOwner) { error ->
+            error?.let {
+                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun loadSites() {
+        viewModel.loadSites()
     }
 
     private fun addSite(name: String) {

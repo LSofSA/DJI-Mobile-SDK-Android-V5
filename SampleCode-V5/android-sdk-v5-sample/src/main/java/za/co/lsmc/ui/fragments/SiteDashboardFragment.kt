@@ -17,7 +17,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import dji.sampleV5.aircraft.R
-import za.co.lsmc.data.Category
+import za.co.lsmc.models.enums.Category
+import za.co.lsmc.data.database.SiteSurveyDbHelper
 import za.co.lsmc.data.entities.Photo
 import za.co.lsmc.models.ActionButton
 import za.co.lsmc.models.SectionStatus
@@ -161,8 +162,10 @@ class SiteDashboardFragment : Fragment() {
         return listOf(
             SectionStatus("POI Center Photo", Category.POI, hasPhotoForCategory(Category.POI), false, 0),
             SectionStatus("TSO Orbit Photos", Category.TSO, hasPhotoForCategory(Category.TSO), false, 0),
-            SectionStatus("Access Route / Road Photos", Category.ACCESS_ROUTE, hasPhotoForCategory(Category.ACCESS_ROUTE), false, 0),
-            SectionStatus("Feeder Run (Ladder) Photos", Category.FEEDER_RUN, hasPhotoForCategory(Category.FEEDER_RUN), false, 0),
+            SectionStatus("Access Route / Road Photos", Category.ACCESS_ROUTE, hasPhotoForCategory(
+                Category.ACCESS_ROUTE), false, 0),
+            SectionStatus("Feeder Run (Ladder) Photos", Category.FEEDER_RUN, hasPhotoForCategory(
+                Category.FEEDER_RUN), false, 0),
             SectionStatus("Head Frame Photos", null, false, true, 0),
             SectionStatus("   Down Orbit", Category.HF_DOWN, hasPhotoForCategory(Category.HF_DOWN), false, 1),
             SectionStatus("   Level Orbit", Category.HF_LEVEL, hasPhotoForCategory(Category.HF_LEVEL), false, 1),
@@ -172,18 +175,34 @@ class SiteDashboardFragment : Fragment() {
     }
 
     private fun createActionsList(): List<ActionButton> {
+        val hasTowerScanData = photos.any { it.category == Category.TSO }
+        val hasHeadFrames = viewModel.site?.let { site ->
+            val db = SiteSurveyDbHelper(requireContext()).readableDatabase
+            val headFrames = SiteSurveyDbHelper(requireContext()).getHeadFramesBySite(db, site.id)
+            db.close()
+            headFrames.isNotEmpty()
+        } ?: false
+
         return listOf(
             ActionButton(
                 title = "New Tower Scan",
-                description = "Start a new tower scan",
+                description = if (hasTowerScanData) "Start over with new scan" else "Start a new tower scan",
                 isEnabled = true
             ) {
-                startNewTowerScan()
+                if (hasTowerScanData) {
+                    showNewScanConfirmation()
+                } else {
+                    startNewTowerScan()
+                }
             },
             ActionButton(
                 title = "Continue Tower Scan",
-                description = "Resume an existing tower scan",
-                isEnabled = photos.any { it.category == Category.TSO }
+                description = when {
+                    !hasHeadFrames -> "No scan data found"
+                    hasTowerScanData -> "Scan appears complete"
+                    else -> "Resume existing scan"
+                },
+                isEnabled = hasHeadFrames && !hasTowerScanData
             ) {
                 continueTowerScan()
             },
@@ -211,6 +230,23 @@ class SiteDashboardFragment : Fragment() {
         )
     }
 
+    private fun showNewScanConfirmation() {
+        val dialog = AlertDialog.Builder(requireContext())
+            .setTitle("Start New Tower Scan")
+            .setMessage("A tower scan already exists for this site. Starting a new scan will overwrite existing data. Continue?")
+            .setPositiveButton("Start New") { _, _ ->
+                startNewTowerScan()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+
+        val typedValue = TypedValue()
+        requireContext().theme.resolveAttribute(android.R.attr.textColorPrimary, typedValue, true)
+
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(typedValue.data)
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(typedValue.data)
+    }
+
     private fun hasPhotoForCategory(category: Category): Boolean {
         return photos.any { photo -> photo.category == category }
     }
@@ -218,7 +254,7 @@ class SiteDashboardFragment : Fragment() {
     private fun loadSiteData() {
         Log.d(TAG, "loadSiteData called")
         lssaTextViewSiteName.text = viewModel.site?.name ?: throw IllegalStateException("A site has not been selected.")
-        viewModel.initializePhotoCountersFromDatabase()
+        viewModel.initializePhotoCounter()
     }
 
     private fun updateSectionStatuses() {

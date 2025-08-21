@@ -9,25 +9,27 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import za.co.lsmc.data.Category
+import za.co.lsmc.models.enums.Category
 import za.co.lsmc.data.database.SiteSurveyDbHelper
+import za.co.lsmc.data.entities.HeadFrame
 import za.co.lsmc.data.entities.Photo
 import za.co.lsmc.data.entities.Site
-import za.co.lsmc.data.repositories.PhotoRepository
-import za.co.lsmc.data.repositories.SiteRepository
+import za.co.lsmc.data.repositories.SiteSurveyRepository
 
 class LSSASiteSurveyViewModel: ViewModel() {
-    private lateinit var siteRepository: SiteRepository
-    private lateinit var photoRepository: PhotoRepository
+    private lateinit var repository: SiteSurveyRepository
     private var isRepositoriesInitialized = false
 
     var site: Site? = null
         set(value) {
             field = value
             if (value != null && isRepositoriesInitialized) {
-                initializePhotoCountersFromDatabase()
+                initializePhotoCounter()
             }
         }
+
+    private val _photos = MutableLiveData<List<Photo>>()
+    val photos: LiveData<List<Photo>> = _photos
 
     private val _sites = MutableLiveData<List<Site>>()
     val sites: LiveData<List<Site>> = _sites
@@ -38,6 +40,9 @@ class LSSASiteSurveyViewModel: ViewModel() {
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
 
+    private val _headFrames = MutableLiveData<List<HeadFrame>>()
+    val headFrames: LiveData<List<HeadFrame>> = _headFrames
+
     private val photoCounters = mutableMapOf<Category, Double>().apply {
         Category.values().forEach { category ->
             this[category] = 1.0
@@ -45,53 +50,51 @@ class LSSASiteSurveyViewModel: ViewModel() {
     }
 
     fun initDbHelper(dbHelper: SiteSurveyDbHelper) {
-        this.siteRepository = SiteRepository(dbHelper)
-        this.photoRepository = PhotoRepository(dbHelper)
+        this.repository = SiteSurveyRepository(dbHelper)
         this.isRepositoriesInitialized = true
 
-        site?.let { initializePhotoCountersFromDatabase() }
+        site?.let { initializePhotoCounter() }
     }
 
     fun isInitialized(): Boolean = isRepositoriesInitialized
 
-    fun loadSites(): Array<Site> {
+    fun loadSites() {
         if (!isRepositoriesInitialized) {
-            throw IllegalStateException("Repositories not initialized. Call initDbHelper() first.")
+            _error.value = "Repositories not initialized. Call initDbHelper() first."
+            return
         }
 
-        return runBlocking {
+        viewModelScope.launch {
             _isLoading.value = true
             try {
-                val siteArray = siteRepository.getAllSites()
-                _sites.value = siteArray.toList()
+                val sitesList = repository.getAllSites()
+                _sites.value = sitesList
                 _error.value = null
-                siteArray
             } catch (e: Exception) {
                 _error.value = "Failed to load sites: ${e.message}"
-                Log.e("ViewModel", "Error loading sites", e)
-                emptyArray()
+                _sites.value = emptyList()
             } finally {
                 _isLoading.value = false
             }
         }
     }
 
-    fun addSite(name: String): Site {
+
+    fun addSite(name: String) {
         if (!isRepositoriesInitialized) {
-            throw IllegalStateException("Repositories not initialized. Call initDbHelper() first.")
+            _error.value = "Repositories not initialized. Call initDbHelper() first."
+            return
         }
 
-        return runBlocking {
+        viewModelScope.launch {
             _isLoading.value = true
             try {
-                val newSite = siteRepository.insertSite(name)
-                loadSitesAsync()
+                val newSite = repository.insertSite(name)
+                val updatedSites = repository.getAllSites()
+                _sites.value = updatedSites
                 _error.value = null
-                newSite
             } catch (e: Exception) {
                 _error.value = "Failed to add site: ${e.message}"
-                Log.e("ViewModel", "Error adding site", e)
-                throw e
             } finally {
                 _isLoading.value = false
             }
@@ -100,35 +103,28 @@ class LSSASiteSurveyViewModel: ViewModel() {
 
     fun deleteSite() {
         if (!isRepositoriesInitialized) {
-            throw IllegalStateException("Repositories not initialized. Call initDbHelper() first.")
+            _error.value = "Repositories not initialized. Call initDbHelper() first."
+            return
         }
 
-        val currentSite = site ?: throw IllegalStateException("A site has not been selected.")
+        site?.let { currentSite ->
+            viewModelScope.launch {
+                _isLoading.value = true
+                try {
+                    repository.deleteSite(currentSite)
 
-        viewModelScope.launch {
-            _isLoading.value = true
-            try {
-                siteRepository.deleteSite(currentSite)
-                site = null
-                loadSitesAsync() // Refresh the list
-                _error.value = null
-            } catch (e: Exception) {
-                _error.value = "Failed to delete site: ${e.message}"
-                Log.e("ViewModel", "Error deleting site", e)
-            } finally {
-                _isLoading.value = false
+                    val updatedSites = repository.getAllSites()
+                    _sites.value = updatedSites
+                    _error.value = null
+                } catch (e: Exception) {
+                    _error.value = "Failed to delete site: ${e.message}"
+                    Log.e("ViewModel", "Error deleting site", e)
+                } finally {
+                    _isLoading.value = false
+                }
             }
-        }
-    }
-
-    private fun loadSitesAsync() {
-        viewModelScope.launch {
-            try {
-                val siteArray = siteRepository.getAllSites()
-                _sites.value = siteArray.toList()
-            } catch (e: Exception) {
-                Log.e("ViewModel", "Error loading sites async", e)
-            }
+        } ?: run {
+            _error.value = "No site selected for deletion"
         }
     }
 
@@ -146,7 +142,7 @@ class LSSASiteSurveyViewModel: ViewModel() {
         viewModelScope.launch {
             try {
                 val currentNumber = photoCounters[category] ?: 1.0
-                val savedPhoto = photoRepository.insertPhoto(
+                val savedPhoto = repository.insertPhoto(
                     currentSite.id,
                     filename,
                     category,
@@ -177,19 +173,17 @@ class LSSASiteSurveyViewModel: ViewModel() {
             return photosLiveData
         }
 
-        val currentSite = site
-
-        if (currentSite != null) {
+        site?.let {
             viewModelScope.launch {
                 try {
-                    val photos = photoRepository.getPhotosBySiteAndCategory(currentSite.id, category)
+                    val photos = repository.getPhotosBySiteAndCategory(it.id, category)
                     photosLiveData.postValue(photos)
                 } catch (e: Exception) {
                     Log.e("ViewModel", "Error getting photos by category", e)
                     photosLiveData.postValue(emptyList())
                 }
             }
-        } else {
+        } ?:  {
             photosLiveData.value = emptyList()
         }
 
@@ -204,21 +198,17 @@ class LSSASiteSurveyViewModel: ViewModel() {
             return photosLiveData
         }
 
-        val currentSite = site
-
-        if (currentSite != null) {
+        site?.let {
             viewModelScope.launch {
                 try {
-                    val photos = photoRepository.getPhotosBySite(currentSite.id)
+                    val photos = repository.getPhotosBySite(it.id)
                     photosLiveData.postValue(photos)
                 } catch (e: Exception) {
                     Log.e("ViewModel", "Error getting photos", e)
                     photosLiveData.postValue(emptyList())
                 }
             }
-        } else {
-            photosLiveData.value = emptyList()
-        }
+        } ?: { photosLiveData.value = emptyList() }
 
         return photosLiveData
     }
@@ -230,7 +220,7 @@ class LSSASiteSurveyViewModel: ViewModel() {
 
         return runBlocking {
             try {
-                siteRepository.getSitePhotoCount(siteId)
+                repository.getPhotosBySite(siteId).size
             } catch (e: Exception) {
                 Log.e("LSSASiteSurveyViewModel", "Error getting photo count", e)
                 0
@@ -238,15 +228,14 @@ class LSSASiteSurveyViewModel: ViewModel() {
         }
     }
 
-    fun deletePhoto(photoId: Long) {
+    fun deletePhoto(photo: Photo) {
         if (!isRepositoriesInitialized) {
             return
         }
 
         viewModelScope.launch {
             try {
-                photoRepository.deletePhoto(photoId)
-                // Optionally refresh photos after deletion
+                repository.deletePhoto(photo)
             } catch (e: Exception) {
                 _error.value = "Failed to delete photo: ${e.message}"
                 Log.e("ViewModel", "Error deleting photo", e)
@@ -258,7 +247,7 @@ class LSSASiteSurveyViewModel: ViewModel() {
         return photoCounters[category] ?: 1.0
     }
 
-    fun initializePhotoCountersFromDatabase() {
+    fun initializePhotoCounter() {
         if (!isRepositoriesInitialized) {
             return
         }
@@ -267,14 +256,91 @@ class LSSASiteSurveyViewModel: ViewModel() {
 
         viewModelScope.launch {
             try {
-                Category.values().forEach { category ->
-                    val maxNumber = photoRepository.getMaxPhotoNumberForCategory(currentSite.id, category)
-                    photoCounters[category] = (maxNumber ?: 0.0) + 1.0
+                for (category in Category.values()) {
+                    try {
+                        val maxNumber = repository.getMaxPhotoNumberForCategory(currentSite.id, category)
+                        photoCounters[category] = (maxNumber ?: 0.0) + 1.0
+                        kotlinx.coroutines.delay(10)
+                    } catch (e: Exception) {
+                        Log.e("ViewModel", "Error initializing counter for category $category", e)
+                        photoCounters[category] = 1.0
+                    }
                 }
             } catch (e: Exception) {
                 Log.e("ViewModel", "Error initializing photo counters", e)
                 resetPhotoCounters()
             }
+        }
+    }
+
+    suspend fun addHeadFrame(altitude: Double): Result<HeadFrame> {
+        return try {
+            site?.let { currentSite ->
+                val newHeadFrame = repository.insertHeadFrame(currentSite.id, altitude)
+                refreshHeadFrames()
+                Result.success(newHeadFrame)
+            } ?: Result.failure(Exception("No site selected"))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun refreshHeadFrames() {
+        site?.let { currentSite ->
+            val headFrames = repository.getHeadFramesBySite(currentSite.id)
+            _headFrames.postValue(headFrames)
+        }
+    }
+
+    suspend fun refreshPhotos() {
+        site?.let { currentSite ->
+            val photos = repository.getPhotosBySite(currentSite.id)
+            _photos.postValue(photos)
+        }
+    }
+
+
+    suspend fun deleteHeadFrame(headFrame: HeadFrame): Result<Unit> {
+        return try {
+            repository.deleteHeadFrame(headFrame)
+            refreshHeadFrames()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getHeadFramesForCurrentSite(): List<HeadFrame> {
+        return site?.let { currentSite ->
+            repository.getHeadFramesBySite(currentSite.id)
+        } ?: emptyList()
+    }
+
+    suspend fun capturePhoto(filename: String, category: Category, altitude: Double = 0.0): Result<Photo> {
+        return try {
+            site?.let { currentSite ->
+                val newPhoto = repository.insertPhoto(currentSite.id, filename, category, altitude)
+                refreshPhotos()
+                Result.success(newPhoto)
+            } ?: Result.failure(Exception("No site selected"))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun hasPhotoForCategory(category: Category): Boolean {
+        if (!isRepositoriesInitialized) {
+            Log.w("ViewModel", "Repositories not initialized when checking photo category")
+            return false
+        }
+
+        return try {
+            site?.let { currentSite ->
+                repository.hasPhotoForCategory(currentSite.id, category)
+            } ?: false
+        } catch (e: Exception) {
+            Log.e("ViewModel", "Error checking photo existence for category $category", e)
+            false
         }
     }
 
@@ -286,5 +352,33 @@ class LSSASiteSurveyViewModel: ViewModel() {
 
     fun clearError() {
         _error.value = null
+    }
+
+    suspend fun setTowerScanRadius(radius: Double): Result<Unit> {
+        if (!isRepositoriesInitialized) {
+            return Result.failure(Exception("Repositories not initialized"))
+        }
+
+        return try {
+            site?.let { currentSite ->
+                repository.updateTowerScan(currentSite.id, rad = radius)
+                Result.success(Unit)
+            } ?: Result.failure(Exception("No site selected"))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getTowerScanRadius(): Double? {
+        if (!isRepositoriesInitialized) return null
+
+        return try {
+            site?.let { currentSite ->
+                repository.getTowerScan(currentSite.id)?.radius
+            }
+        } catch (e: Exception) {
+            Log.e("ViewModel", "Error getting tower scan radius", e)
+            null
+        }
     }
 }

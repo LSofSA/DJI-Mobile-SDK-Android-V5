@@ -1,6 +1,6 @@
 package za.co.lsmc.data.entities
 
-import za.co.lsmc.data.Category
+import za.co.lsmc.models.enums.Category
 
 data class Photo(
     var id: Long,

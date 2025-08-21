@@ -1,6 +1,6 @@
 package za.co.lsmc.models
 
-import za.co.lsmc.data.Category
+import za.co.lsmc.models.enums.Category
 
 // might just want to keep this in the  related adapter class?
 data class SectionStatus(

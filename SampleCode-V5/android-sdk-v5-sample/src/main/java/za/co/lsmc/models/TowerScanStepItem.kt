@@ -1,4 +1,4 @@
-package za.co.lsmc.data
+package za.co.lsmc.models
 
 import za.co.lsmc.data.entities.HeadFrame
 

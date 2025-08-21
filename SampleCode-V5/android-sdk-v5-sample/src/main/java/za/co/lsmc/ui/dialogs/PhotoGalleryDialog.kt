@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dji.sampleV5.aircraft.R
 import za.co.lsmc.ui.adapters.PhotoGalleryAdapter
-import za.co.lsmc.data.Category
+import za.co.lsmc.models.enums.Category
 import za.co.lsmc.data.entities.Photo
 import za.co.lsmc.viewmodels.LSSASiteSurveyViewModel
 
@@ -135,6 +135,6 @@ class PhotoGalleryDialog(
     }
 
     private fun deletePhoto(photo: Photo) {
-        viewModel.deletePhoto(photo.id)
+        viewModel.deletePhoto(photo)
     }
 }

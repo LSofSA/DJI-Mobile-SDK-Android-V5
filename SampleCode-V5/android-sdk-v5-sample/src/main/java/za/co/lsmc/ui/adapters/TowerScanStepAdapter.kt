@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import dji.sampleV5.aircraft.R
 import za.co.lsmc.data.entities.HeadFrame
-import za.co.lsmc.data.TowerScanStepItem
+import za.co.lsmc.models.TowerScanStepItem
 import java.util.Locale
 
 class TowerScanStepAdapter(
